@@ -36,7 +36,6 @@ class SearchViewModel : ViewModel() {
     var searchQuery by mutableStateOf("")
         private set
     
-    // New state to track if a search has been performed
     var hasSearched by mutableStateOf(false)
         private set
     
@@ -48,14 +47,11 @@ class SearchViewModel : ViewModel() {
     
     fun updateSearchQuery(query: String) {
         searchQuery = query
-        // Don't auto-search anymore - only search when explicitly triggered
-        // Reset search state when query changes
         if (!hasSearched) {
             searchResults = emptyList()
         }
     }
     
-    // New function to explicitly trigger search
     fun triggerSearch() {
         if (searchQuery.isNotEmpty()) {
             hasSearched = true
@@ -71,7 +67,6 @@ class SearchViewModel : ViewModel() {
                 
                 val result = repository.search(query)
                 
-                // Filter out posters with Farsi titles
                 val filteredPosters = result.posters.filter { poster ->
                     LanguageUtils.shouldDisplayTitle(poster.title)
                 }
@@ -92,7 +87,6 @@ class SearchViewModel : ViewModel() {
                 isCountriesLoading = true
                 countries = countryRepository.getAllCountries()
             } catch (e: Exception) {
-                // Handle error silently for countries
                 countries = emptyList()
             } finally {
                 isCountriesLoading = false

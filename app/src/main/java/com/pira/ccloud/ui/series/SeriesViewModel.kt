@@ -1,6 +1,7 @@
 package com.pira.ccloud.ui.series
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -38,7 +39,7 @@ class SeriesViewModel : ViewModel() {
     var genres by mutableStateOf<List<Genre>>(emptyList())
         private set
     
-    var selectedGenreId by mutableStateOf(0)
+    var selectedGenreId by mutableIntStateOf(0)
         private set
     
     var selectedFilterType by mutableStateOf(FilterType.DEFAULT)
@@ -80,13 +81,11 @@ class SeriesViewModel : ViewModel() {
                 errorMessage = null
                 
                 val newSeries = repository.getSeries(page, selectedGenreId, selectedFilterType)
-                
-                // Filter out series with Farsi titles
+
                 val filteredSeries = newSeries.filter { seriesItem ->
                     LanguageUtils.shouldDisplayTitle(seriesItem.title)
                 }
-                
-                // If we get fewer series than expected, we've reached the end
+
                 canLoadMore = filteredSeries.isNotEmpty()
                 
                 if (page == 0) {

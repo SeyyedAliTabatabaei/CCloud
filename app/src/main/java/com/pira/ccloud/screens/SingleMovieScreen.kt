@@ -83,20 +83,16 @@ fun SingleMovieScreen(
         movie = StorageUtils.loadMovieFromFile(context, movieId)
     }
     
-    // Directly render content without Scaffold since it's already in MainScreen's Scaffold
     if (movie != null) {
         MovieDetailsContent(
             movie = movie!!,
             onBackClick = { navController.popBackStack() },
             onPlayClick = { source ->
-                // Launch video player activity
                 VideoPlayerActivity.start(context, source.url)
             },
-            // Remove any padding from parent Scaffold to use full screen
             modifier = Modifier.fillMaxSize()
         )
     } else {
-        // Show loading or error state
         Box(
             modifier = Modifier
                 .fillMaxSize(),
@@ -134,7 +130,6 @@ fun MovieDetailsContent(
     var selectedSource by remember { mutableStateOf<Source?>(null) }
     var showSourceDialog by remember { mutableStateOf(false) }
     
-    // Source selection dialog
     if (showSourceDialog && selectedSource != null) {
         SourceOptionsDialog(
             source = selectedSource!!,
@@ -156,13 +151,11 @@ fun MovieDetailsContent(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Movie header with background cover and foreground image
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp)
         ) {
-            // Background cover image (blurred)
             Image(
                 painter = rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
@@ -177,7 +170,6 @@ fun MovieDetailsContent(
                 contentScale = ContentScale.Crop
             )
             
-            // Gradient overlay for better text visibility
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -222,8 +214,7 @@ fun MovieDetailsContent(
                     // Movie title
                     Text(
                         text = movie.title,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     
@@ -236,7 +227,7 @@ fun MovieDetailsContent(
                     
                     Text(
                         text = countryText,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     
@@ -254,9 +245,8 @@ fun MovieDetailsContent(
                         Spacer(modifier = Modifier.width(8.dp))
                         
                         Text(
-                            text = String.format("%.1f", movie.imdb),
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Medium,
+                            text = "IMDB " + String.format("%.1f", movie.imdb),
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }

@@ -90,7 +90,11 @@ fun SeriesScreen(
     }
     
     Column(modifier = Modifier.fillMaxSize()) {
-        // Genre filter section
+        Toolbar(
+            navController = navController ,
+            title = ""
+        )
+
         GenreFilterSection(
             genres = genres,
             selectedGenreId = selectedGenreId,
@@ -98,11 +102,9 @@ fun SeriesScreen(
             onGenreSelected = { genreId -> viewModel.selectGenre(genreId) },
             onFilterTypeSelected = { filterType -> viewModel.selectFilterType(filterType) }
         )
-        
-        // Remove Column wrapper to use full screen space
+
         when {
             isLoading && series.isEmpty() -> {
-                // Show modern loading animation when initial series are loading
                 LoadingScreenSeries()
             }
             errorMessage != null && series.isEmpty() -> {
@@ -136,7 +138,6 @@ fun LoadingScreenSeries() {
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Add a title while loading
         Text(
             text = "Loading Series...",
             style = MaterialTheme.typography.headlineSmall,

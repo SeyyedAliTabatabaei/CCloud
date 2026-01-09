@@ -2,33 +2,66 @@ package com.pira.ccloud.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.pira.ccloud.R
 
-// Set of Material typography styles to start with
-val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+val CustomFontBold = FontFamily(Font(R.font.vazirmatn_bold))
+val CustomFontMedium = FontFamily(Font(R.font.vazirmatn_medium))
+val CustomFontRegular = FontFamily(Font(R.font.vazirmatn_regular))
+
+fun dynamicTypography(scale: Float): Typography {
+    return Typography(
+        titleLarge = TextStyle(
+            fontSize = 22.sp * scale,
+            fontFamily = CustomFontBold,
+            fontWeight = FontWeight(700)
+        ),
+        titleMedium = TextStyle(
+            fontSize = 16.sp * scale,
+            fontFamily = CustomFontBold,
+            fontWeight = FontWeight(700)
+        ),
+        titleSmall = TextStyle(
+            fontSize = 14.sp * scale,
+            fontFamily = CustomFontBold,
+            fontWeight = FontWeight(700)
+        ),
+
+        bodyLarge = TextStyle(
+            fontSize = 16.sp * scale,
+            fontFamily = CustomFontMedium,
+            fontWeight = FontWeight(500)
+        ),
+        bodyMedium = TextStyle(
+            fontSize = 14.sp * scale,
+            fontFamily = CustomFontMedium,
+            fontWeight = FontWeight(500)
+        ),
+        bodySmall = TextStyle(
+            fontSize = 12.sp * scale,
+            fontFamily = CustomFontMedium,
+            fontWeight = FontWeight(500)
+        ),
+
+        labelLarge = TextStyle(
+            fontSize = 14.sp * scale,
+            fontFamily = CustomFontRegular,
+            fontWeight = FontWeight(400)
+        ),
+        labelMedium = TextStyle(
+            fontSize = 12.sp * scale,
+            fontFamily = CustomFontRegular,
+            fontWeight = FontWeight(400)
+        ),
+        labelSmall = TextStyle(
+            fontSize = 10.sp * scale,
+            fontFamily = CustomFontRegular,
+            fontWeight = FontWeight(400)
+        )
     )
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
-)
+}
+
+

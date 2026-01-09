@@ -7,19 +7,17 @@ import com.pira.ccloud.data.model.Movie
 import com.pira.ccloud.data.model.Source
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.concurrent.TimeUnit
 
 class MovieRepository : BaseRepository() {
-    private val BASE_URL = "https://server-hi-speed-iran.info/api/movie/by/filtres"
-    
+    private val BASE_URL_MOVIE = "https://server-hi-speed-iran.info/api/movie/by/filtres"
+
     suspend fun getMovies(page: Int = 0, genreId: Int = 0, filterType: FilterType = FilterType.DEFAULT): List<Movie> {
         return withContext(Dispatchers.IO) {
             try {
-                val url = buildUrl(BASE_URL, genreId, filterType, page)
+                val url = buildUrl(BASE_URL_MOVIE, genreId, filterType, page)
                 
                 val jsonData = executeRequest(url) { Request.Builder().url(it).build() }
                 
@@ -29,12 +27,55 @@ class MovieRepository : BaseRepository() {
             }
         }
     }
-    
+
+    suspend fun getNewMovies(filterType: FilterType = FilterType.DEFAULT): List<Movie> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = buildUrl(BASE_URL_MOVIE, 0, filterType, 0)
+
+                val jsonData = executeRequest(url) { Request.Builder().url(it).build() }
+
+                parseMovies(jsonData)
+            } catch (e: Exception) {
+                throw Exception("Error fetching movies: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getTopMovie(filterType: FilterType = FilterType.BY_IMDB): List<Movie> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = buildUrl(BASE_URL_MOVIE, 0, filterType, 0)
+
+                val jsonData = executeRequest(url) { Request.Builder().url(it).build() }
+
+                parseMovies(jsonData)
+            } catch (e: Exception) {
+                throw Exception("Error fetching movies: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getPopularMovie(filterType: FilterType = FilterType.BY_VIEWS): List<Movie> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = buildUrl(BASE_URL_MOVIE, 0, filterType, 0)
+
+                val jsonData = executeRequest(url) { Request.Builder().url(it).build() }
+
+                parseMovies(jsonData)
+            } catch (e: Exception) {
+                throw Exception("Error fetching movies: ${e.message}")
+            }
+        }
+    }
+
     private fun buildUrl(baseUrl: String, genreId: Int, filterType: FilterType, page: Int): String {
         return when (filterType) {
             FilterType.DEFAULT -> "$baseUrl/$genreId/created/$page/$API_KEY"
             FilterType.BY_YEAR -> "$baseUrl/$genreId/year/$page/$API_KEY"
             FilterType.BY_IMDB -> "$baseUrl/$genreId/imdb/$page/$API_KEY"
+            FilterType.BY_VIEWS -> "$baseUrl/$genreId/views/$page/$API_KEY"
         }
     }
     

@@ -3,6 +3,7 @@ package com.pira.ccloud.data.repository
 import com.pira.ccloud.data.model.Country
 import com.pira.ccloud.data.model.FilterType
 import com.pira.ccloud.data.model.Genre
+import com.pira.ccloud.data.model.Movie
 import com.pira.ccloud.data.model.Series
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -28,12 +29,56 @@ class SeriesRepository : BaseRepository() {
             }
         }
     }
-    
+
+    suspend fun getNewSeries(filterType: FilterType = FilterType.DEFAULT): List<Series> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = buildUrl(BASE_URL, 0, filterType, 0)
+
+                val jsonData = executeRequest(url) { Request.Builder().url(it).build() }
+
+                parseSeries(jsonData)
+            } catch (e: Exception) {
+                throw Exception("Error fetching movies: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getTopSeries(filterType: FilterType = FilterType.BY_IMDB): List<Series> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = buildUrl(BASE_URL, 0, filterType, 0)
+
+                val jsonData = executeRequest(url) { Request.Builder().url(it).build() }
+
+                parseSeries(jsonData)
+            } catch (e: Exception) {
+                throw Exception("Error fetching movies: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getPopularSeries(filterType: FilterType = FilterType.BY_VIEWS): List<Series> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = buildUrl(BASE_URL, 0, filterType, 0)
+
+                val jsonData = executeRequest(url) { Request.Builder().url(it).build() }
+
+                parseSeries(jsonData)
+            } catch (e: Exception) {
+                throw Exception("Error fetching movies: ${e.message}")
+            }
+        }
+    }
+
+
     private fun buildUrl(baseUrl: String, genreId: Int, filterType: FilterType, page: Int): String {
         return when (filterType) {
             FilterType.DEFAULT -> "$baseUrl/$genreId/created/$page/$API_KEY"
             FilterType.BY_YEAR -> "$baseUrl/$genreId/year/$page/$API_KEY"
             FilterType.BY_IMDB -> "$baseUrl/$genreId/imdb/$page/$API_KEY"
+            FilterType.BY_VIEWS -> "$baseUrl/$genreId/views/$page/$API_KEY"
         }
     }
     

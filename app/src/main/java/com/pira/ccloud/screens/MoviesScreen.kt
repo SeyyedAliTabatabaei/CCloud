@@ -1,5 +1,6 @@
 package com.pira.ccloud.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -8,6 +9,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,6 +34,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
@@ -39,6 +43,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -61,16 +66,24 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
+import com.pira.ccloud.components.ErrorScreen
+import com.pira.ccloud.components.FilterTypeSelector
 import com.pira.ccloud.components.GenreFilterSection
+import com.pira.ccloud.components.GenreSelector
+import com.pira.ccloud.components.MovieGridItem
+import com.pira.ccloud.components.MovieListItem
+import com.pira.ccloud.components.ViewToggleCard
+import com.pira.ccloud.components.ViewType
 import com.pira.ccloud.data.model.Genre
 import com.pira.ccloud.data.model.Movie
 import com.pira.ccloud.ui.movies.MoviesViewModel
+import com.pira.ccloud.ui.theme.Surface
 import com.pira.ccloud.utils.DeviceUtils
 import com.pira.ccloud.utils.StorageUtils
+import kotlin.enums.enumEntries
 
+
+@SuppressLint("RememberReturnType")
 @Composable
 fun MoviesScreen(
     viewModel: MoviesViewModel = viewModel(),
@@ -83,23 +96,50 @@ fun MoviesScreen(
     val genres = viewModel.genres
     val selectedGenreId = viewModel.selectedGenreId
     val selectedFilterType = viewModel.selectedFilterType
-    
+    var viewType by remember { mutableStateOf(ViewType.GRID) }
+
     LaunchedEffect(Unit) {
         if (movies.isEmpty()) {
             viewModel.loadMovies()
         }
     }
-    
+
     Column(modifier = Modifier.fillMaxSize()) {
-        // Genre filter section
-        GenreFilterSection(
-            genres = genres,
-            selectedGenreId = selectedGenreId,
-            selectedFilterType = selectedFilterType,
-            onGenreSelected = { genreId -> viewModel.selectGenre(genreId) },
-            onFilterTypeSelected = { filterType -> viewModel.selectFilterType(filterType) }
-        )
-        
+
+        Row(
+            modifier = Modifier.fillMaxWidth() ,
+            verticalAlignment = Alignment.CenterVertically ,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            ViewToggleCard(
+                initial = viewType ,
+                onViewChange = {
+                    viewType = it
+                }
+            )
+
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically ,
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                GenreSelector(
+                    genres = genres,
+                    selectedGenreId = selectedGenreId,
+                    onGenreSelected = { genreId ->
+                        viewModel.selectGenre(genreId)
+                    }
+                )
+
+                FilterTypeSelector(
+                    selectedFilterType = selectedFilterType,
+                    onFilterTypeSelected = { filterType ->
+                        viewModel.selectFilterType(filterType)
+                    }
+                )
+            }
+        }
+
         when {
             isLoading && movies.isEmpty() -> {
                 // Show modern loading animation when initial movies are loading
@@ -112,15 +152,14 @@ fun MoviesScreen(
                 )
             }
             else -> {
-                MovieGrid(
+                MovieGridContent(
                     movies = movies,
-                    isLoading = isLoading,
                     isLoadingMore = isLoadingMore,
                     errorMessage = errorMessage,
                     onRetry = { viewModel.retry() },
-                    onRefresh = { viewModel.refresh() },
                     onLoadMore = { viewModel.loadMoreMovies() },
-                    navController = navController
+                    navController = navController ,
+                    isGridView = viewType == ViewType.GRID
                 )
             }
         }
@@ -131,20 +170,20 @@ fun MoviesScreen(
 fun LoadingScreen() {
     val shimmerColor = MaterialTheme.colorScheme.surfaceVariant
     val shimmerColorShade = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
-    
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Add a title while loading
         Text(
-            text = "Loading Movies...",
+            text = "درحال بارگزاری...",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(16.dp),
             fontWeight = FontWeight.Bold
         )
-        
+
         AnimatedVisibility(
             visible = true,
             enter = fadeIn(initialAlpha = 0.3f),
@@ -179,7 +218,7 @@ fun ShimmerMovieItem(
             animation = tween(durationMillis = 1200)
         ), label = "shimmer_translate"
     )
-    
+
     val brush = Brush.linearGradient(
         colors = listOf(
             shimmerColor,
@@ -191,7 +230,7 @@ fun ShimmerMovieItem(
         start = Offset.Zero,
         end = Offset(x = translateAnim, y = translateAnim)
     )
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -214,9 +253,9 @@ fun ShimmerMovieItem(
                     .clip(RoundedCornerShape(8.dp))
                     .background(brush)
             )
-            
+
             Spacer(modifier = Modifier.height(12.dp))
-            
+
             // Title shimmer
             Box(
                 modifier = Modifier
@@ -224,9 +263,9 @@ fun ShimmerMovieItem(
                     .height(20.dp)
                     .background(brush)
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             // Year shimmer
             Box(
                 modifier = Modifier
@@ -234,9 +273,9 @@ fun ShimmerMovieItem(
                     .height(16.dp)
                     .background(brush)
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             // Genres shimmer
             Box(
                 modifier = Modifier
@@ -244,9 +283,9 @@ fun ShimmerMovieItem(
                     .height(16.dp)
                     .background(brush)
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             // Rating shimmer
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -256,9 +295,9 @@ fun ShimmerMovieItem(
                         .size(16.dp)
                         .background(brush)
                 )
-                
+
                 Spacer(modifier = Modifier.width(8.dp))
-                
+
                 Box(
                     modifier = Modifier
                         .width(40.dp)
@@ -266,77 +305,6 @@ fun ShimmerMovieItem(
                         .background(brush)
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun MovieGrid(
-    movies: List<Movie>,
-    isLoading: Boolean,
-    isLoadingMore: Boolean,
-    errorMessage: String?,
-    onRetry: () -> Unit,
-    onRefresh: () -> Unit,
-    onLoadMore: () -> Unit,
-    navController: NavController? = null
-) {
-    val moviesList = movies.toList()
-    val context = LocalContext.current
-    
-    val columns = DeviceUtils.getGridColumns(LocalContext.current.resources)
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(columns),
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp),
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
-    ) {
-        itemsIndexed(moviesList) { index, movie ->
-            MovieItem(
-                movie = movie,
-                onClick = {
-                    // Save movie to storage
-                    StorageUtils.saveMovieToFile(context, movie)
-                    // Navigate to single movie screen
-                    navController?.navigate("single_movie/${movie.id}")
-                }
-            )
-            
-            // Load more when we're near the end of the list
-            if (index >= moviesList.size - 3) {
-                LaunchedEffect(Unit) {
-                    onLoadMore()
-                }
-            }
-        }
-        
-        if (isLoadingMore) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    // Modern animated loading indicator
-                    ModernCircularProgressIndicator()
-                }
-            }
-        }
-        
-        if (errorMessage != null) {
-            item {
-                ErrorItem(
-                    errorMessage = errorMessage,
-                    onRetry = onRetry
-                )
-            }
-        }
-        
-        // Add a small spacer at the bottom to avoid excessive padding
-        item {
-            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
@@ -354,7 +322,7 @@ fun ModernCircularProgressIndicator() {
             )
         ), label = "progress_anim"
     )
-    
+
     // Add rotation animation for a more dynamic effect
     val rotation by transition.animateFloat(
         initialValue = 0f,
@@ -366,7 +334,7 @@ fun ModernCircularProgressIndicator() {
             )
         ), label = "rotation_anim"
     )
-    
+
     CircularProgressIndicator(
         progress = progress,
         modifier = Modifier
@@ -378,155 +346,7 @@ fun ModernCircularProgressIndicator() {
     )
 }
 
-@Composable
-fun MovieItem(
-    movie: Movie,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(310.dp) // Fixed height for all cards
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp)
-        ) {
-            // Movie poster with rating overlay
-            Box {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        ImageRequest.Builder(LocalContext.current)
-                            .data(movie.image)
-                            .crossfade(true)
-                            .build()
-                    ),
-                    contentDescription = movie.title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(180.dp)
-                        .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
-                )
-                
-                // Rating overlay at top-right corner
-                Card(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp),
-                    shape = RoundedCornerShape(50.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.Black.copy(alpha = 0.7f)
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = "Rating",
-                            tint = Color.Yellow,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = String.format("%.1f", movie.imdb),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            // Movie details with weight to fill remaining space
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = movie.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                
-                Spacer(modifier = Modifier.height(4.dp))
-                
-                Text(
-                    text = movie.year.toString(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Genres
-                if (movie.genres.isNotEmpty()) {
-                    Text(
-                        text = movie.genres.joinToString(", ") { it.title },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-        }
-    }
-}
 
-@Composable
-fun ErrorScreen(
-    errorMessage: String,
-    onRetry: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
-    ) {
-        Text(
-            text = "Failed to load movies",
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        
-        Text(
-            text = errorMessage,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        
-        Button(
-            onClick = onRetry,
-            modifier = Modifier.padding(top = 8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Refresh,
-                contentDescription = "Retry",
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Retry")
-        }
-    }
-}
 
 @Composable
 fun ErrorItem(
@@ -550,19 +370,19 @@ fun ErrorItem(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Failed to load more movies",
+                text = "خطا در دریافت لیست",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onErrorContainer,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            
+
             Text(
                 text = errorMessage,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onErrorContainer,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            
+
             Button(
                 onClick = onRetry,
                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(
@@ -576,7 +396,61 @@ fun ErrorItem(
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Retry")
+                Text("تلاش مجدد")
+            }
+        }
+    }
+}
+
+@Composable
+fun MovieGridContent(
+    movies: List<Movie>,
+    isGridView: Boolean,
+    isLoadingMore: Boolean,
+    errorMessage: String?,
+    onRetry: () -> Unit,
+    onLoadMore: () -> Unit,
+    navController: NavController?
+) {
+    val context = LocalContext.current
+    val columns = if (isGridView) DeviceUtils.getGridColumns(LocalContext.current.resources) else 1
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(columns),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        itemsIndexed(movies) { index, movie ->
+            // انتخاب انیمیشن بر اساس تغییر حالت نمایش
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn() + expandVertically()
+            ) {
+                if (isGridView) {
+                    MovieGridItem(movie = movie, onClick = {
+                        StorageUtils.saveMovieToFile(context, movie)
+                        navController?.navigate("single_movie/${movie.id}")
+                    })
+                } else {
+                    MovieListItem(movie = movie, onClick = {
+                        StorageUtils.saveMovieToFile(context, movie)
+                        navController?.navigate("single_movie/${movie.id}")
+                    })
+                }
+            }
+
+            if (index >= movies.size - 3) {
+                LaunchedEffect(Unit) { onLoadMore() }
+            }
+        }
+
+        if (isLoadingMore) {
+            item {
+                Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
+                    ModernCircularProgressIndicator()
+                }
             }
         }
     }

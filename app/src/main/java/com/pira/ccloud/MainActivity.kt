@@ -6,49 +6,41 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.pira.ccloud.navigation.AppNavigation
 import com.pira.ccloud.navigation.AppScreens
-import com.pira.ccloud.navigation.BottomNavigationBar
 import com.pira.ccloud.navigation.SidebarNavigation
 import com.pira.ccloud.ui.theme.CCloudTheme
 import com.pira.ccloud.ui.theme.ThemeManager
 import com.pira.ccloud.ui.theme.ThemeSettings
 import com.pira.ccloud.utils.StorageUtils
 import com.pira.ccloud.data.model.FontSettings
+import com.pira.ccloud.navigation.CustomBottomNavigationBar
+import com.pira.ccloud.screens.MainToolbar
 import com.pira.ccloud.utils.DeviceUtils
 
 class MainActivity : ComponentActivity() {
@@ -66,7 +58,11 @@ class MainActivity : ComponentActivity() {
         }
         
         setContent {
-            MainApp()
+            CompositionLocalProvider(
+                LocalLayoutDirection provides LayoutDirection.Rtl
+            ) {
+                MainApp()
+            }
         }
     }
 }
@@ -82,7 +78,9 @@ fun MainApp() {
     LaunchedEffect(themeSettings) {
         themeManager.saveThemeSettings(themeSettings)
     }
-    
+
+
+
     CCloudTheme(themeSettings, fontSettings) {
         MainScreen(
             onThemeSettingsChanged = { themeSettings = it },
@@ -108,7 +106,6 @@ fun MainScreen(
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
     
-    // Find the current screen, including the SingleMovie and SingleSeries screens
     val currentScreen = when {
         currentRoute?.startsWith("single_movie") == true -> AppScreens.SingleMovie
         currentRoute?.startsWith("single_series") == true -> AppScreens.SingleSeries
@@ -118,7 +115,6 @@ fun MainScreen(
         else -> AppScreens.screens.find { it.route == currentRoute } ?: AppScreens.Movies
     }
     
-    // System UI controller for edge-to-edge support
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = themeSettings.themeMode != com.pira.ccloud.ui.theme.ThemeMode.DARK
     
@@ -134,12 +130,20 @@ fun MainScreen(
     }
     
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.systemBars),
+        topBar = {
+            when(currentScreen) {
+                AppScreens.Home, AppScreens.Search , AppScreens.Favorites , AppScreens.Settings -> MainToolbar()
+                else -> {}
+            }
+        },
         bottomBar = {
             // Only show bottom bar if the current screen requires it and we're not on splash
             // and we're not on TV (TV uses sidebar instead)
             if (!isTv && currentScreen.showBottomBar && currentRoute != AppScreens.Splash.route) {
-                BottomNavigationBar(navController)
+                CustomBottomNavigationBar(navController)
             }
         }
     ) { innerPadding ->

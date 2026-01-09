@@ -26,18 +26,20 @@ import com.pira.ccloud.ui.theme.ThemeSettings
 import com.pira.ccloud.ui.theme.ThemeManager
 import com.pira.ccloud.data.model.FontSettings // Add this import
 import androidx.compose.ui.platform.LocalContext
+import com.pira.ccloud.screens.HomeScreen
+import com.pira.ccloud.ui.home.HomeViewModel
 
 @Composable
 fun AppNavigation(
     navController: NavHostController,
     onThemeSettingsChanged: (ThemeSettings) -> Unit = {},
-    onFontSettingsChanged: (FontSettings) -> Unit = {} // Add this parameter
+    onFontSettingsChanged: (FontSettings) -> Unit = {}
 ) {
     val context = LocalContext.current
     val themeManager = ThemeManager(context)
     val themeSettings = themeManager.loadThemeSettings()
     
-    // Create ViewModels here to preserve their state across navigation
+    val homeViewModel = viewModel<HomeViewModel>()
     val moviesViewModel = viewModel<MoviesViewModel>()
     val seriesViewModel = viewModel<SeriesViewModel>()
     val searchViewModel = viewModel<SearchViewModel>()
@@ -52,8 +54,7 @@ fun AppNavigation(
             SplashScreen(
                 onTimeout = {
                     navController.popBackStack()
-                    navController.navigate(AppScreens.Movies.route) {
-                        // Prevent re-adding splash to back stack
+                    navController.navigate(AppScreens.Home.route) {
                         launchSingleTop = true
                     }
                 },
@@ -74,7 +75,10 @@ fun AppNavigation(
                 }
             )
         }
-        
+
+        composable(route = AppScreens.Home.route) {
+            HomeScreen(viewModel = homeViewModel, navController = navController)
+        }
         composable(route = AppScreens.Movies.route) {
             MoviesScreen(viewModel = moviesViewModel, navController = navController)
         }

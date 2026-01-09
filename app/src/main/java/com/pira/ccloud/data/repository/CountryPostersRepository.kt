@@ -30,6 +30,7 @@ class CountryPostersRepository : BaseRepository() {
             FilterType.DEFAULT -> "$BASE_URL/0/$countryId/created/$page/$API_KEY"
             FilterType.BY_YEAR -> "$BASE_URL/0/$countryId/year/$page/$API_KEY"
             FilterType.BY_IMDB -> "$BASE_URL/0/$countryId/imdb/$page/$API_KEY"
+            FilterType.BY_VIEWS -> "$BASE_URL/0/$countryId/views/$page/$API_KEY"
         }
     }
     

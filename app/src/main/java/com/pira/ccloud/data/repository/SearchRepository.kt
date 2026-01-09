@@ -21,7 +21,6 @@ class SearchRepository : BaseRepository() {
     suspend fun search(query: String): SearchResult {
         return withContext(Dispatchers.IO) {
             try {
-                // Properly encode the query for URL paths
                 val encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8.toString()).replace("+", "%20")
                 val url = "$BASE_URL/$encodedQuery/$API_KEY/"
                 
@@ -51,7 +50,6 @@ class SearchRepository : BaseRepository() {
                 val posterObj = postersArray.getJSONObject(i)
                 posters.add(parsePoster(posterObj))
             } catch (e: Exception) {
-                // Skip posters that fail to parse
                 continue
             }
         }
@@ -121,7 +119,6 @@ class SearchRepository : BaseRepository() {
                     )
                 )
             } catch (e: Exception) {
-                // Skip sources that fail to parse
                 continue
             }
         }
@@ -141,7 +138,6 @@ class SearchRepository : BaseRepository() {
                     )
                 )
             } catch (e: Exception) {
-                // Skip countries that fail to parse
                 continue
             }
         }

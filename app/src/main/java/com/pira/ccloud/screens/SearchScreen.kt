@@ -86,7 +86,6 @@ fun SearchScreen(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     
-    // Request focus when the screen is first displayed to ensure keyboard opens on TV
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
@@ -96,7 +95,6 @@ fun SearchScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Search bar
         TextField(
             value = viewModel.searchQuery,
             onValueChange = { viewModel.updateSearchQuery(it) },
@@ -104,7 +102,6 @@ fun SearchScreen(
                 .fillMaxWidth()
                 .focusRequester(focusRequester)
                 .clickable { 
-                    // Ensure keyboard opens when clicking on the TextField on TV
                     focusRequester.requestFocus()
                 },
             placeholder = { 
@@ -114,8 +111,7 @@ fun SearchScreen(
                 ) 
             },
             leadingIcon = {
-                IconButton(onClick = { 
-                    // Trigger search when clicking search icon
+                IconButton(onClick = {
                     if (viewModel.searchQuery.isNotEmpty()) {
                         viewModel.triggerSearch()
                         focusManager.clearFocus()
