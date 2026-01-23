@@ -26,6 +26,7 @@ import com.pira.ccloud.ui.theme.ThemeSettings
 import com.pira.ccloud.ui.theme.ThemeManager
 import com.pira.ccloud.data.model.FontSettings // Add this import
 import androidx.compose.ui.platform.LocalContext
+import com.pira.ccloud.data.model.FilterType
 import com.pira.ccloud.screens.HomeScreen
 import com.pira.ccloud.ui.home.HomeViewModel
 
@@ -79,11 +80,13 @@ fun AppNavigation(
         composable(route = AppScreens.Home.route) {
             HomeScreen(viewModel = homeViewModel, navController = navController)
         }
-        composable(route = AppScreens.Movies.route) {
-            MoviesScreen(viewModel = moviesViewModel, navController = navController)
+        composable(route = AppScreens.Movies.route ) {backStackEntry ->
+            val filterType = FilterType.valueOf(backStackEntry.arguments?.getString("filter_type") ?: FilterType.DEFAULT.name)
+            MoviesScreen(viewModel = moviesViewModel, navController = navController , filterType = filterType)
         }
-        composable(route = AppScreens.Series.route) {
-            SeriesScreen(viewModel = seriesViewModel, navController = navController)
+        composable(route = AppScreens.Series.route) { backStackEntry ->
+            val filterType = FilterType.valueOf(backStackEntry.arguments?.getString("filter_type") ?: FilterType.DEFAULT.name)
+            SeriesScreen(viewModel = seriesViewModel, navController = navController , filterType = filterType)
         }
         composable(route = AppScreens.Search.route) {
             SearchScreen(viewModel = searchViewModel, navController = navController)

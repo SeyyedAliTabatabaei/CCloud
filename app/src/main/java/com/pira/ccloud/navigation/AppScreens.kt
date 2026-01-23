@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.pira.ccloud.R
+import com.pira.ccloud.data.model.FilterType
 
 sealed class AppScreens(
     val route: String,
@@ -31,20 +32,28 @@ sealed class AppScreens(
     )
 
     data object Movies : AppScreens(
-        route = "movies",
+        route = "movies/{filter_type}",
         resourceId = R.string.movies,
         icon = Icons.Default.Movie,
         showBottomBar = false ,
         showSidebar = false
-    )
+    ) {
+        fun routeWithData(filterType: FilterType) : String {
+            return "movies/${filterType.name}"
+        }
+    }
 
     data object Series : AppScreens(
-        route = "series",
+        route = "series/{filter_type}",
         resourceId = R.string.series,
         icon = Icons.Default.Tv,
         showBottomBar = false ,
         showSidebar = false
-    )
+    ) {
+        fun routeWithData(filterType: FilterType) : String {
+            return "series/${filterType.name}"
+        }
+    }
 
     data object Search : AppScreens(
         route = "search",
@@ -64,7 +73,11 @@ sealed class AppScreens(
         icon = Icons.Default.Movie,
         showBottomBar = false,
         showSidebar = false
-    )
+    ) {
+        fun routeWithData(movieId: Int) : String {
+            return "single_movie/$movieId"
+        }
+    }
     
     data object SingleSeries : AppScreens(
         route = "single_series/{seriesId}",
@@ -72,7 +85,11 @@ sealed class AppScreens(
         icon = Icons.Default.Tv,
         showBottomBar = false,
         showSidebar = false
-    )
+    ) {
+        fun routeWithData(seriesId: Int) : String {
+            return "single_series/$seriesId"
+        }
+    }
 
     data object Favorites : AppScreens(
         route = "favorites",

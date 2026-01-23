@@ -14,10 +14,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.pira.ccloud.components.HomeMovieSection
 import com.pira.ccloud.components.HomeSeriesSection
+import com.pira.ccloud.data.model.FilterType
 import com.pira.ccloud.data.model.Movie
 import com.pira.ccloud.data.model.Series
 import com.pira.ccloud.navigation.AppScreens
 import com.pira.ccloud.ui.home.HomeViewModel
+import com.pira.ccloud.ui.home.MovieData
+import com.pira.ccloud.ui.home.SeriesData
 import com.pira.ccloud.utils.StorageUtils
 
 @SuppressLint("RememberReturnType")
@@ -37,16 +40,20 @@ fun HomeScreen(
 
     val onClickMovie : (Movie) -> Unit = { movie ->
         StorageUtils.saveMovieToFile(context, movie)
-        navController?.navigate("single_movie/${movie.id}")
+        navController?.navigate(AppScreens.SingleMovie.routeWithData(movie.id))
     }
 
     val onClickSeries : (Series) -> Unit = { series ->
         StorageUtils.saveSeriesToFile(context, series)
-        navController?.navigate("single_series/${series.id}")
+        navController?.navigate(AppScreens.SingleSeries.routeWithData(series.id))
     }
 
-    val onClickShowMore : () -> Unit = {
-        navController?.navigate(AppScreens.Series.route)
+    val onClickShowMoreSeries : (SeriesData) -> Unit = {
+        navController?.navigate(AppScreens.Series.routeWithData(it.filterType))
+    }
+
+    val onClickShowMoreMovie : (MovieData) -> Unit = {
+        navController?.navigate(AppScreens.Movies.routeWithData(it.filterType))
     }
 
     LaunchedEffect(Unit) {
@@ -60,7 +67,7 @@ fun HomeScreen(
                 title = "جدیدترین فیلم ها",
                 data = newMovies,
                 onClick = onClickMovie ,
-                showMore = onClickShowMore
+                showMore = { onClickShowMoreMovie(newMovies) }
             )
         }
 
@@ -71,7 +78,7 @@ fun HomeScreen(
                 title = "جدیدترین سریال ها",
                 data = newSeries,
                 onClick = onClickSeries ,
-                showMore = onClickShowMore
+                showMore = { onClickShowMoreSeries(newSeries) }
             )
         }
 
@@ -82,7 +89,7 @@ fun HomeScreen(
                 title = "برترین فیلم ها",
                 data = topMovies,
                 onClick = onClickMovie ,
-                showMore = onClickShowMore
+                showMore = { onClickShowMoreMovie(topMovies) }
             )
         }
 
@@ -93,7 +100,7 @@ fun HomeScreen(
                 title = "برترین سریال ها",
                 data = topSeries,
                 onClick = onClickSeries ,
-                showMore = onClickShowMore
+                showMore = { onClickShowMoreSeries(topSeries) }
             )
         }
 
@@ -104,7 +111,7 @@ fun HomeScreen(
                 title = "فیلم های پرطرفدار",
                 data = popularMovies,
                 onClick = onClickMovie ,
-                showMore = onClickShowMore
+                showMore = { onClickShowMoreMovie(popularMovies) }
             )
         }
 
@@ -115,7 +122,7 @@ fun HomeScreen(
                 title = "سریال های پرطرفدار",
                 data = popularSeries,
                 onClick = onClickSeries ,
-                showMore = onClickShowMore
+                showMore = { onClickShowMoreSeries(popularSeries) }
             )
         }
     }

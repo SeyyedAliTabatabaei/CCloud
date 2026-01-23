@@ -70,12 +70,16 @@ import com.pira.ccloud.components.ErrorScreen
 import com.pira.ccloud.components.FilterTypeSelector
 import com.pira.ccloud.components.GenreFilterSection
 import com.pira.ccloud.components.GenreSelector
+import com.pira.ccloud.components.ModernCircularProgressIndicator
 import com.pira.ccloud.components.MovieGridItem
+import com.pira.ccloud.components.MovieGridItemShimmer
 import com.pira.ccloud.components.MovieListItem
 import com.pira.ccloud.components.ViewToggleCard
 import com.pira.ccloud.components.ViewType
+import com.pira.ccloud.data.model.FilterType
 import com.pira.ccloud.data.model.Genre
 import com.pira.ccloud.data.model.Movie
+import com.pira.ccloud.navigation.AppScreens
 import com.pira.ccloud.ui.movies.MoviesViewModel
 import com.pira.ccloud.ui.theme.Surface
 import com.pira.ccloud.utils.DeviceUtils
@@ -87,7 +91,8 @@ import kotlin.enums.enumEntries
 @Composable
 fun MoviesScreen(
     viewModel: MoviesViewModel = viewModel(),
-    navController: NavController? = null
+    navController: NavController? = null,
+    filterType: FilterType
 ) {
     val movies = viewModel.movies
     val isLoading = viewModel.isLoading
@@ -99,6 +104,7 @@ fun MoviesScreen(
     var viewType by remember { mutableStateOf(ViewType.GRID) }
 
     LaunchedEffect(Unit) {
+        viewModel.selectFilterType(filterType)
         if (movies.isEmpty()) {
             viewModel.loadMovies()
         }
@@ -106,20 +112,19 @@ fun MoviesScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
 
+        Toolbar(
+            navController = navController ,
+            title = "فیلم ها"
+        )
+
         Row(
             modifier = Modifier.fillMaxWidth() ,
             verticalAlignment = Alignment.CenterVertically ,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            ViewToggleCard(
-                initial = viewType ,
-                onViewChange = {
-                    viewType = it
-                }
-            )
-
 
             Row(
+                modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically ,
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
@@ -138,12 +143,18 @@ fun MoviesScreen(
                     }
                 )
             }
+
+            ViewToggleCard(
+                initial = viewType ,
+                onViewChange = {
+                    viewType = it
+                }
+            )
         }
 
         when {
             isLoading && movies.isEmpty() -> {
-                // Show modern loading animation when initial movies are loading
-                LoadingScreen()
+                MovieGridItemShimmer()
             }
             errorMessage != null && movies.isEmpty() -> {
                 ErrorScreen(
@@ -155,8 +166,6 @@ fun MoviesScreen(
                 MovieGridContent(
                     movies = movies,
                     isLoadingMore = isLoadingMore,
-                    errorMessage = errorMessage,
-                    onRetry = { viewModel.retry() },
                     onLoadMore = { viewModel.loadMoreMovies() },
                     navController = navController ,
                     isGridView = viewType == ViewType.GRID
@@ -167,248 +176,10 @@ fun MoviesScreen(
 }
 
 @Composable
-fun LoadingScreen() {
-    val shimmerColor = MaterialTheme.colorScheme.surfaceVariant
-    val shimmerColorShade = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Add a title while loading
-        Text(
-            text = "درحال بارگزاری...",
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(16.dp),
-            fontWeight = FontWeight.Bold
-        )
-
-        AnimatedVisibility(
-            visible = true,
-            enter = fadeIn(initialAlpha = 0.3f),
-            exit = fadeOut()
-        ) {
-            val columns = DeviceUtils.getGridColumns(LocalContext.current.resources)
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(columns),
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(6) { // Show 6 loading placeholders
-                    ShimmerMovieItem(shimmerColor, shimmerColorShade)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ShimmerMovieItem(
-    shimmerColor: Color,
-    shimmerColorShade: Color
-) {
-    val transition = rememberInfiniteTransition(label = "shimmer")
-    val translateAnim by transition.animateFloat(
-        initialValue = -1000f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1200)
-        ), label = "shimmer_translate"
-    )
-
-    val brush = Brush.linearGradient(
-        colors = listOf(
-            shimmerColor,
-            shimmerColorShade,
-            shimmerColor,
-            shimmerColorShade,
-            shimmerColor
-        ),
-        start = Offset.Zero,
-        end = Offset(x = translateAnim, y = translateAnim)
-    )
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
-            // Movie poster shimmer
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(brush)
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Title shimmer
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .height(20.dp)
-                    .background(brush)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Year shimmer
-            Box(
-                modifier = Modifier
-                    .width(60.dp)
-                    .height(16.dp)
-                    .background(brush)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Genres shimmer
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.6f)
-                    .height(16.dp)
-                    .background(brush)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Rating shimmer
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(16.dp)
-                        .background(brush)
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Box(
-                    modifier = Modifier
-                        .width(40.dp)
-                        .height(16.dp)
-                        .background(brush)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ModernCircularProgressIndicator() {
-    val transition = rememberInfiniteTransition(label = "progress")
-    val progress by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 1000,
-                easing = androidx.compose.animation.core.FastOutSlowInEasing
-            )
-        ), label = "progress_anim"
-    )
-
-    // Add rotation animation for a more dynamic effect
-    val rotation by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 2000,
-                easing = androidx.compose.animation.core.LinearEasing
-            )
-        ), label = "rotation_anim"
-    )
-
-    CircularProgressIndicator(
-        progress = progress,
-        modifier = Modifier
-            .size(48.dp)
-            .rotate(rotation), // Add rotation
-        strokeWidth = 4.dp,
-        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-        color = MaterialTheme.colorScheme.primary
-    )
-}
-
-
-
-@Composable
-fun ErrorItem(
-    errorMessage: String,
-    onRetry: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer,
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "خطا در دریافت لیست",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onErrorContainer,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            Text(
-                text = errorMessage,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onErrorContainer,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            Button(
-                onClick = onRetry,
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.onErrorContainer,
-                    contentColor = MaterialTheme.colorScheme.errorContainer
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Refresh,
-                    contentDescription = "Retry",
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("تلاش مجدد")
-            }
-        }
-    }
-}
-
-@Composable
 fun MovieGridContent(
     movies: List<Movie>,
     isGridView: Boolean,
     isLoadingMore: Boolean,
-    errorMessage: String?,
-    onRetry: () -> Unit,
     onLoadMore: () -> Unit,
     navController: NavController?
 ) {
@@ -423,7 +194,6 @@ fun MovieGridContent(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         itemsIndexed(movies) { index, movie ->
-            // انتخاب انیمیشن بر اساس تغییر حالت نمایش
             AnimatedVisibility(
                 visible = true,
                 enter = fadeIn() + expandVertically()
@@ -431,12 +201,12 @@ fun MovieGridContent(
                 if (isGridView) {
                     MovieGridItem(movie = movie, onClick = {
                         StorageUtils.saveMovieToFile(context, movie)
-                        navController?.navigate("single_movie/${movie.id}")
+                        navController?.navigate(AppScreens.SingleMovie.routeWithData(movie.id))
                     })
                 } else {
                     MovieListItem(movie = movie, onClick = {
                         StorageUtils.saveMovieToFile(context, movie)
-                        navController?.navigate("single_movie/${movie.id}")
+                        navController?.navigate(AppScreens.SingleMovie.routeWithData(movie.id))
                     })
                 }
             }

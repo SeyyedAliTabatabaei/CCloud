@@ -21,14 +21,49 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pira.ccloud.data.model.Movie
+import com.pira.ccloud.data.model.Series
 import com.pira.ccloud.utils.fakeMovie
 
 @Composable
 fun MovieListItem(
-    movie: Movie,
+    movie: Movie ?= null,
+    series: Series ?= null,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+
+    val image = when {
+        movie != null -> movie.image
+        series != null -> series.image
+        else -> ""
+    }
+
+    val imdb = when {
+        movie != null -> movie.imdb
+        series != null -> series.imdb
+        else -> 0.0
+    }
+
+
+    val title = when {
+        movie != null -> movie.title
+        series != null -> series.title
+        else -> ""
+    }
+
+    val duration = when {
+        movie != null -> movie.duration
+        series != null -> series.duration
+        else -> ""
+    }
+
+    val description = when {
+        movie != null -> movie.description
+        series != null -> series.description
+        else -> ""
+    }
+
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -36,7 +71,7 @@ fun MovieListItem(
             .padding(vertical = 8.dp)
     ) {
         MoviePoster(
-            imageUrl = movie.image,
+            imageUrl = image,
             modifier = Modifier
                 .width(110.dp)
                 .height(160.dp)
@@ -50,7 +85,7 @@ fun MovieListItem(
                 .weight(1f)
         ) {
             Text(
-                text = movie.title,
+                text = title,
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -59,7 +94,7 @@ fun MovieListItem(
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                text = movie.description,
+                text = description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
                 maxLines = 3,
@@ -72,14 +107,14 @@ fun MovieListItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "⭐ ${movie.rating}",
+                    text = "⭐ ${imdb}",
                     fontSize = 13.sp
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Text(
-                    text = movie.duration ?: "",
+                    text = duration ?: "",
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
