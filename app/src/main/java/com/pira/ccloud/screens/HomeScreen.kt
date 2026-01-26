@@ -9,12 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.pira.ccloud.R
 import com.pira.ccloud.components.HomeMovieSection
 import com.pira.ccloud.components.HomeSeriesSection
-import com.pira.ccloud.data.model.FilterType
 import com.pira.ccloud.data.model.Movie
 import com.pira.ccloud.data.model.Series
 import com.pira.ccloud.navigation.AppScreens
@@ -64,7 +65,7 @@ fun HomeScreen(
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
             HomeMovieSection(
-                title = "جدیدترین فیلم ها",
+                title = stringResource(R.string.home_screen_newest_movies),
                 data = newMovies,
                 onClick = onClickMovie ,
                 showMore = { onClickShowMoreMovie(newMovies) }
@@ -75,7 +76,7 @@ fun HomeScreen(
 
         item {
             HomeSeriesSection(
-                title = "جدیدترین سریال ها",
+                title = stringResource(R.string.home_screen_newest_series),
                 data = newSeries,
                 onClick = onClickSeries ,
                 showMore = { onClickShowMoreSeries(newSeries) }
@@ -86,7 +87,7 @@ fun HomeScreen(
 
         item {
             HomeMovieSection(
-                title = "برترین فیلم ها",
+                title = stringResource(R.string.home_screen_top_movies),
                 data = topMovies,
                 onClick = onClickMovie ,
                 showMore = { onClickShowMoreMovie(topMovies) }
@@ -97,7 +98,7 @@ fun HomeScreen(
 
         item {
             HomeSeriesSection(
-                title = "برترین سریال ها",
+                title = stringResource(R.string.home_screen_top_series),
                 data = topSeries,
                 onClick = onClickSeries ,
                 showMore = { onClickShowMoreSeries(topSeries) }
@@ -108,7 +109,7 @@ fun HomeScreen(
 
         item {
             HomeMovieSection(
-                title = "فیلم های پرطرفدار",
+                title = stringResource(R.string.home_screen_popular_movies),
                 data = popularMovies,
                 onClick = onClickMovie ,
                 showMore = { onClickShowMoreMovie(popularMovies) }
@@ -119,7 +120,7 @@ fun HomeScreen(
 
         item {
             HomeSeriesSection(
-                title = "سریال های پرطرفدار",
+                title = stringResource(R.string.home_screen_popular_series),
                 data = popularSeries,
                 onClick = onClickSeries ,
                 showMore = { onClickShowMoreSeries(popularSeries) }

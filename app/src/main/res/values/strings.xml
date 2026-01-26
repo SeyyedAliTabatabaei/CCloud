@@ -1,14 +1,87 @@
 <resources>
     <string name="app_name">FilmPlus</string>
-    <string name="home">Home</string>
-    <string name="movies">Movies</string>
-    <string name="series">Series</string>
-    <string name="search">Search</string>
-    <string name="settings">Settings</string>
-    <string name="about">About</string>
-    <string name="movie_details">Movie Details</string>
-    <string name="series_details">Series Details</string>
-    <string name="video_player">Video Player</string>
-    <string name="favorites">Favorites</string>
-    <string name="country">Country</string>
+    <string name="home">خانه</string>
+    <string name="movies">فیلم ها</string>
+    <string name="series">سریال ها</string>
+    <string name="search">جستجو</string>
+    <string name="settings">تنظیمات</string>
+    <string name="about">درباره ما</string>
+    <string name="movie_details">جزئیات فیلم</string>
+    <string name="series_details">جرئیات سریال</string>
+    <string name="video_player">پخش کننده فیلم</string>
+    <string name="favorites">موردعلاقه ها</string>
+    <string name="country">کشور</string>
+    <string name="home_screen_newest_movies">جدیدترین فیلم ها</string>
+    <string name="home_screen_newest_series">جدیدترین سریال ها</string>
+    <string name="home_screen_top_movies">برترین فیلم ها</string>
+    <string name="home_screen_top_series">برترین سریال ها</string>
+    <string name="home_screen_popular_movies">فیلم های پرطرفدار</string>
+    <string name="home_screen_popular_series">سریال های پرطرفدار</string>
+    <string name="about_screen_back">برگشت</string>
+    <string name="about_screen_app_logo">لوگو</string>
+    <string name="about_screen_version">Version %1$s (%2$d) - %3$s</string>
+    <string name="about_screen_developer">Developed by Hossein Pira</string>
+    <string name="about_screen_connect_with_us">Connect with us</string>
+    <string name="about_screen_github">GitHub Repository</string>
+    <string name="about_screen_telegram_channel">Telegram Channel</string>
+    <string name="about_screen_developer_telegram">Developer Telegram</string>
+    <string name="about_screen_developer_email">Developer Email</string>
+    <string name="about_screen_copyright">© %1$d CCloud. All rights reserved.</string>
+    <string name="about_screen_open_link">Open link</string>
+    <string name="architecture_arm64">ARM64 (arm64-v8a)</string>
+    <string name="architecture_arm32">ARM32 (armeabi-v7a)</string>
+    <string name="architecture_unknown_abi">%1$s (Unknown)</string>
+    <string name="architecture_unknown">Unknown</string>
+    <string name="search_movie_series">جستجوی فیلم و سریال...</string>
+    <string name="no_result_found">نتیجه ای پیدا نشد!</string>
+    <string name="retry">تلاش مجدد</string>
+    <string name="unknown_error">خطای نامشخص</string>
+    <string name="search_for_movie_and_series">جستجو برای فیلم و سریال</string>
+    <string name="search_for_movie_and_series_hint">برای جستجو کلیدواژه موردنظر خود را وارد کنید</string>
+
+    
+    <!-- General -->
+    <string name="playlists">پلی‌لیست‌ها</string>
+    <string name="no_favorites_yet">هنوز مورد علاقه‌ای اضافه نشده</string>
+    <string name="save">ذخیره</string>
+    <string name="cancel">لغو</string>
+    <string name="delete">حذف</string>
+    <string name="remove">حذف</string>
+    <string name="rename">تغییر نام</string>
+    <string name="create">ایجاد</string>
+    <string name="more_options">گزینه های بیشتر</string>
+
+    <!-- Favorites -->
+    <string name="delete_all_favorites">حذف همه علاقه‌مندی‌ها</string>
+    <string name="delete_all_favorites_desc">
+        آیا مطمئن هستید که می‌خواهید همه علاقه‌مندی‌ها را حذف کنید؟ این عملیات قابل بازگشت نیست.
+    </string>
+    <string name="all_favorites_deleted">همه علاقه‌مندی‌ها حذف شدند</string>
+
+    <string name="remove_from_favorites">حذف از علاقه‌مندی‌ها</string>
+    <string name="remove_favorite_desc">
+        آیا مطمئن هستید که می‌خواهید «%1$s» را از علاقه‌مندی‌ها حذف کنید؟
+    </string>
+    <string name="removed_from_favorites">از علاقه‌مندی‌ها حذف شد</string>
+
+    <!-- Playlist -->
+    <string name="create_new_playlist">ایجاد پلی‌لیست جدید</string>
+    <string name="playlist_name">نام پلی‌لیست</string>
+    <string name="new_playlist_name">نام جدید پلی‌لیست</string>
+    <string name="playlist_created_success">پلی‌لیست با موفقیت ایجاد شد</string>
+    <string name="playlist_renamed_success">نام پلی‌لیست با موفقیت تغییر کرد</string>
+    <string name="playlist_deleted_success">پلی‌لیست با موفقیت حذف شد</string>
+
+    <string name="playlist_already_exists">
+        پلی‌لیستی با این نام وجود دارد
+    </string>
+
+    <string name="rename_playlist">تغییر نام پلی‌لیست</string>
+    <string name="delete_playlist">حذف پلی‌لیست</string>
+    <string name="delete_playlist_desc">
+        آیا مطمئن هستید که می‌خواهید پلی‌لیست «%1$s» را حذف کنید؟ این عملیات قابل بازگشت نیست.
+    </string>
+
+    <string name="select_playlists">انتخاب پلی‌لیست‌ها</string>
+    <string name="move_to_playlist">انتقال به پلی‌لیست</string>
 </resources>

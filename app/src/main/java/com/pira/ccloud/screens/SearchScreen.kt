@@ -71,6 +71,9 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.pira.ccloud.R
+import com.pira.ccloud.components.ErrorScreen
+import com.pira.ccloud.components.MovieGridItemShimmer
+import com.pira.ccloud.components.ViewType
 import com.pira.ccloud.data.model.Country
 import com.pira.ccloud.data.model.Poster
 import com.pira.ccloud.ui.search.SearchViewModel
@@ -106,7 +109,7 @@ fun SearchScreen(
                 },
             placeholder = { 
                 Text(
-                    text = "Search movies and series...",
+                    text = stringResource(R.string.search_movie_series),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 ) 
             },
@@ -204,56 +207,34 @@ fun SearchScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    MovieGridItemShimmer()
                 }
             }
             viewModel.errorMessage != null -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Error: ${viewModel.errorMessage}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Please try again",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = { viewModel.triggerSearch() },
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Text("Retry")
-                        }
+                ErrorScreen(
+                    errorMessage = viewModel.errorMessage ?: stringResource(R.string.unknown_error),
+                    onRetry = {
+                        viewModel.triggerSearch()
                     }
-                }
-            }
-            viewModel.searchResults.isNotEmpty() -> {
-                SearchResultsGrid(
-                    posters = viewModel.searchResults,
-                    navController = navController,
-                    context = context
                 )
             }
-            // Only show "No results found" after a search has been performed
+            viewModel.searchResults.isNotEmpty() -> {
+                SearchGridContent(
+                    posters = viewModel.searchResults,
+                    isLoadingMore = false,
+                    onLoadMore = { },
+                    navController = navController,
+                    isGridView = true
+                )
+            }
+
             viewModel.hasSearched && viewModel.searchQuery.isNotEmpty() && !viewModel.isLoading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No results found",
+                        text = stringResource(R.string.no_result_found),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -270,19 +251,19 @@ fun SearchScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Search,
-                            contentDescription = "Search",
+                            contentDescription = stringResource(R.string.search),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(48.dp)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Search for movies and series",
-                            style = MaterialTheme.typography.headlineSmall,
+                            text = stringResource(R.string.search_for_movie_and_series),
+                            style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Enter a keyword to start searching",
+                            text = stringResource(R.string.search_for_movie_and_series_hint),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -333,177 +314,5 @@ fun CountryStoryItem(
             modifier = Modifier.width(70.dp),
             textAlign = TextAlign.Center
         )
-    }
-}
-
-@Composable
-fun SearchResultsGrid(
-    posters: List<Poster>,
-    navController: NavController?,
-    context: Context
-) {
-    val columns = DeviceUtils.getGridColumns(LocalContext.current.resources)
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(columns),
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(0.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(posters) { poster ->
-            PosterItem(
-                poster = poster,
-                onClick = {
-                    if (poster.isMovie()) {
-                        // Save movie to storage and navigate to single movie screen
-                        StorageUtils.saveMovieToFile(context, poster.toMovie())
-                        navController?.navigate("single_movie/${poster.id}")
-                    } else if (poster.isSeries()) {
-                        // Save series to storage and navigate to single series screen
-                        StorageUtils.saveSeriesToFile(context, poster.toSeries())
-                        navController?.navigate("single_series/${poster.id}")
-                    }
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun PosterItem(
-    poster: Poster,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(310.dp) // Fixed height for all cards
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp)
-        ) {
-            // Poster image with rating overlay
-            Box {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        ImageRequest.Builder(LocalContext.current)
-                            .data(poster.image)
-                            .crossfade(true)
-                            .build()
-                    ),
-                    contentDescription = poster.title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(180.dp)
-                        .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
-                )
-                
-                // Rating overlay at top-right corner
-                Card(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp),
-                    shape = RoundedCornerShape(50.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.Black.copy(alpha = 0.7f)
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = "Rating",
-                            tint = Color.Yellow,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = String.format("%.1f", poster.imdb),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-                
-                // Type indicator at bottom-right corner
-                Card(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(8.dp),
-                    shape = RoundedCornerShape(50.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (poster.isMovie()) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.secondary
-                        }
-                    )
-                ) {
-                    Box(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = if (poster.isMovie()) "Movie" else "Series",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (poster.isMovie()) {
-                                MaterialTheme.colorScheme.onPrimary
-                            } else {
-                                MaterialTheme.colorScheme.onSecondary
-                            },
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            // Poster details with weight to fill remaining space
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = poster.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                
-                Spacer(modifier = Modifier.height(4.dp))
-                
-                Text(
-                    text = poster.year.toString(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Genres
-                if (poster.genres.isNotEmpty()) {
-                    Text(
-                        text = poster.genres.joinToString(", ") { it.title },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-        }
     }
 }

@@ -108,8 +108,8 @@ fun FavoritesScreen(navController: NavController) {
     if (showDeleteAllDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteAllDialog = false },
-            title = { Text("Delete All Favorites") },
-            text = { Text("Are you sure you want to delete all favorites? This action cannot be undone.") },
+            title = { Text(stringResource(R.string.delete_all_favorites)) },
+            text = { Text(stringResource(R.string.delete_all_favorites_desc)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -117,17 +117,17 @@ fun FavoritesScreen(navController: NavController) {
                         favorites = emptyList()
                         showDeleteAllDialog = false
                         // Show toast
-                        android.widget.Toast.makeText(context, "All favorites deleted", android.widget.Toast.LENGTH_SHORT).show()
+                        android.widget.Toast.makeText(context, context.getString(R.string.all_favorites_deleted), android.widget.Toast.LENGTH_SHORT).show()
                     }
                 ) {
-                    Text("Delete")
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showDeleteAllDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -139,12 +139,12 @@ fun FavoritesScreen(navController: NavController) {
         
         AlertDialog(
             onDismissRequest = { showCreateGroupDialog = false },
-            title = { Text("Create New Playlist") },
+            title = { Text(stringResource(R.string.create_new_playlist)) },
             text = {
                 OutlinedTextField(
                     value = groupName,
                     onValueChange = { groupName = it },
-                    label = { Text("Playlist Name") },
+                    label = { Text(stringResource(R.string.playlist_name)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true, // Prevent new lines
                     keyboardOptions = KeyboardOptions(
@@ -171,14 +171,14 @@ fun FavoritesScreen(navController: NavController) {
                                     // Show success message
                                     android.widget.Toast.makeText(
                                         context, 
-                                        "Playlist created successfully", 
+                                        context.getString(R.string.playlist_created_success),
                                         android.widget.Toast.LENGTH_SHORT
                                     ).show()
                                 } else {
                                     // Show error message
                                     android.widget.Toast.makeText(
                                         context, 
-                                        "A playlist with this name already exists", 
+                                        context.getString(R.string.playlist_already_exists),
                                         android.widget.Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -208,15 +208,15 @@ fun FavoritesScreen(navController: NavController) {
                                 groupName = ""
                                 // Show success message
                                 android.widget.Toast.makeText(
-                                    context, 
-                                    "Playlist created successfully", 
+                                    context,
+                                    context.getString(R.string.playlist_created_success),
                                     android.widget.Toast.LENGTH_SHORT
                                 ).show()
                             } else {
                                 // Show error message
                                 android.widget.Toast.makeText(
-                                    context, 
-                                    "A playlist with this name already exists", 
+                                    context,
+                                    context.getString(R.string.playlist_already_exists),
                                     android.widget.Toast.LENGTH_SHORT
                                 ).show()
                             }
@@ -224,14 +224,14 @@ fun FavoritesScreen(navController: NavController) {
                     },
                     enabled = groupName.isNotBlank()
                 ) {
-                    Text("Create")
+                    Text(stringResource(R.string.create))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showCreateGroupDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -245,12 +245,12 @@ fun FavoritesScreen(navController: NavController) {
     if (showRenameGroupDialog && groupToRename != null) {
         AlertDialog(
             onDismissRequest = { showRenameGroupDialog = false },
-            title = { Text("Rename Playlist") },
+            title = { Text(stringResource(R.string.rename_playlist)) },
             text = {
                 OutlinedTextField(
                     value = newGroupName,
                     onValueChange = { newGroupName = it },
-                    label = { Text("New Playlist Name") },
+                    label = { Text(stringResource(R.string.new_playlist_name)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
@@ -276,14 +276,14 @@ fun FavoritesScreen(navController: NavController) {
                                     // Show success message
                                     android.widget.Toast.makeText(
                                         context, 
-                                        "Playlist renamed successfully", 
+                                        context.getString(R.string.playlist_renamed_success),
                                         android.widget.Toast.LENGTH_SHORT
                                     ).show()
                                 } else {
                                     // Show error message
                                     android.widget.Toast.makeText(
                                         context, 
-                                        "A playlist with this name already exists", 
+                                        context.getString(R.string.playlist_already_exists),
                                         android.widget.Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -312,15 +312,15 @@ fun FavoritesScreen(navController: NavController) {
                                 newGroupName = ""
                                 // Show success message
                                 android.widget.Toast.makeText(
-                                    context, 
-                                    "Playlist renamed successfully", 
+                                    context,
+                                    context.getString(R.string.playlist_renamed_success),
                                     android.widget.Toast.LENGTH_SHORT
                                 ).show()
                             } else {
                                 // Show error message
                                 android.widget.Toast.makeText(
-                                    context, 
-                                    "A playlist with this name already exists", 
+                                    context,
+                                    context.getString(R.string.playlist_already_exists),
                                     android.widget.Toast.LENGTH_SHORT
                                 ).show()
                             }
@@ -328,7 +328,7 @@ fun FavoritesScreen(navController: NavController) {
                     },
                     enabled = newGroupName.isNotBlank()
                 ) {
-                    Text("Rename")
+                    Text(stringResource(R.string.rename))
                 }
             },
             dismissButton = {
@@ -339,7 +339,7 @@ fun FavoritesScreen(navController: NavController) {
                         newGroupName = ""
                     }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -352,9 +352,9 @@ fun FavoritesScreen(navController: NavController) {
     if (showDeleteGroupDialog && groupToDelete != null) {
         AlertDialog(
             onDismissRequest = { showDeleteGroupDialog = false },
-            title = { Text("Delete Playlist") },
+            title = { Text(stringResource(R.string.delete_playlist)) },
             text = { 
-                Text("Are you sure you want to delete the playlist \"${groupToDelete!!.name}\"? This action cannot be undone.") 
+                Text(stringResource(R.string.delete_playlist_desc , groupToDelete!!.name))
             },
             confirmButton = {
                 TextButton(
@@ -374,13 +374,13 @@ fun FavoritesScreen(navController: NavController) {
                             // Show success message
                             android.widget.Toast.makeText(
                                 context, 
-                                "Playlist deleted successfully", 
+                                context.getString(R.string.playlist_deleted_success),
                                 android.widget.Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
                 ) {
-                    Text("Delete")
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
@@ -390,7 +390,7 @@ fun FavoritesScreen(navController: NavController) {
                         groupToDelete = null
                     }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -409,7 +409,7 @@ fun FavoritesScreen(navController: NavController) {
         
         AlertDialog(
             onDismissRequest = { showMoveToGroupDialog = false },
-            title = { Text("Select Playlists") },
+            title = { Text(stringResource(R.string.select_playlists)) },
             text = {
                 LazyColumn {
                     items(groups.filter { !it.isDefault }) { group ->
@@ -474,14 +474,14 @@ fun FavoritesScreen(navController: NavController) {
                         showMoveToGroupDialog = false
                     }
                 ) {
-                    Text("Save")
+                    Text(stringResource(R.string.save))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showMoveToGroupDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -573,7 +573,7 @@ fun FavoritesScreen(navController: NavController) {
                             modifier = Modifier.size(24.dp)
                         )
                         Text(
-                            text = "Playlists",
+                            text = stringResource(R.string.playlists),
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier
                                 .padding(start = 8.dp)
@@ -654,14 +654,14 @@ fun FavoritesScreen(navController: NavController) {
                                     onDismissRequest = { showGroupMenu = false }
                                 ) {
                                     DropdownMenuItem(
-                                        text = { Text("Rename") },
+                                        text = { Text(stringResource(R.string.rename)) },
                                         onClick = {
                                             // Implementation for rename
                                             showGroupMenu = false
                                         }
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("Delete") },
+                                        text = { Text(stringResource(R.string.delete)) },
                                         onClick = {
                                             // Implementation for delete
                                             showGroupMenu = false
@@ -700,7 +700,7 @@ fun FavoritesScreen(navController: NavController) {
                                 .size(48.dp)
                                 .padding(bottom = 16.dp)
                         )
-                        Text(text = "No favorites yet")
+                        Text(text = stringResource(R.string.no_favorites_yet))
                     }
                 }
             } else {
@@ -712,8 +712,8 @@ fun FavoritesScreen(navController: NavController) {
                 if (showRemoveFavoriteDialog && favoriteToRemove != null) {
                     AlertDialog(
                         onDismissRequest = { showRemoveFavoriteDialog = false },
-                        title = { Text("Remove from Favorites") },
-                        text = { Text("Are you sure you want to remove \"${favoriteToRemove!!.title}\" from your favorites?") },
+                        title = { Text(stringResource(R.string.remove_from_favorites)) },
+                        text = { Text( stringResource(R.string.remove_favorite_desc , favoriteToRemove!!.title)) },
                         confirmButton = {
                             TextButton(
                                 onClick = {
@@ -727,10 +727,10 @@ fun FavoritesScreen(navController: NavController) {
                                     showRemoveFavoriteDialog = false
                                     favoriteToRemove = null
                                     // Show toast
-                                    android.widget.Toast.makeText(context, "Removed from favorites", android.widget.Toast.LENGTH_SHORT).show()
+                                    android.widget.Toast.makeText(context, context.getString(R.string.removed_from_favorites), android.widget.Toast.LENGTH_SHORT).show()
                                 }
                             ) {
-                                Text("Remove")
+                                Text(stringResource(R.string.remove))
                             }
                         },
                         dismissButton = {
@@ -740,7 +740,7 @@ fun FavoritesScreen(navController: NavController) {
                                     favoriteToRemove = null
                                 }
                             ) {
-                                Text("Cancel")
+                                Text(stringResource(R.string.remove))
                             }
                         }
                     )
@@ -775,10 +775,10 @@ fun FavoritesScreen(navController: NavController) {
                                         // Navigate to the appropriate screen based on type
                                         when (favorite.type) {
                                             "movie" -> {
-                                                navController.navigate("${AppScreens.SingleMovie.route.replace("{movieId}", favorite.id.toString())}")
+                                                navController.navigate(AppScreens.SingleMovie.routeWithData(favorite.id))
                                             }
                                             "series" -> {
-                                                navController.navigate("${AppScreens.SingleSeries.route.replace("{seriesId}", favorite.id.toString())}")
+                                                navController.navigate(AppScreens.SingleSeries.routeWithData(favorite.id))
                                             }
                                         }
                                     },
@@ -902,14 +902,14 @@ fun FavoriteItemCard(
                     onDismissRequest = { showMenu = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Move to Playlist") },
+                        text = { Text(stringResource(R.string.move_to_playlist)) },
                         onClick = {
                             onMoveToGroup(favorite)
                             showMenu = false
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Delete") },
+                        text = { Text(stringResource(R.string.delete)) },
                         onClick = {
                             showMenu = false
                             onDelete()

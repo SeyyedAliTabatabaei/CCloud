@@ -61,7 +61,7 @@ fun AboutScreen(navController: NavController?) {
             IconButton(onClick = { navController?.popBackStack() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = stringResource(R.string.about_screen_back)
                 )
             }
             
@@ -88,7 +88,7 @@ fun AboutScreen(navController: NavController?) {
                     .data(R.drawable.splash_logo)
                     .crossfade(true)
                     .build(),
-                contentDescription = "App Logo",
+                contentDescription = stringResource(R.string.about_screen_app_logo),
                 modifier = Modifier.size(120.dp)
             )
             
@@ -96,7 +96,7 @@ fun AboutScreen(navController: NavController?) {
             
             // App Name
             Text(
-                text = "CCloud",
+                text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -105,7 +105,7 @@ fun AboutScreen(navController: NavController?) {
             
             // App Version and Architecture
             Text(
-                text = "Version ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) - ${getArchitecture()}",
+                text = stringResource(R.string.about_screen_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE, getArchitecture()),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -114,7 +114,7 @@ fun AboutScreen(navController: NavController?) {
             
             // Developer Info
             Text(
-                text = "Developed by Hossein Pira",
+                text = stringResource(R.string.about_screen_developer),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
             )
@@ -128,7 +128,7 @@ fun AboutScreen(navController: NavController?) {
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "Connect with us",
+                        text = stringResource(R.string.about_screen_connect_with_us),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
@@ -136,7 +136,7 @@ fun AboutScreen(navController: NavController?) {
                     // GitHub Link
                     LinkItem(
                         icon = Icons.Default.Public,
-                        text = "GitHub Repository",
+                        text = stringResource(R.string.about_screen_github),
                         url = "https://github.com/code3-dev/CCloud"
                     )
                     
@@ -145,7 +145,7 @@ fun AboutScreen(navController: NavController?) {
                     // Telegram Channel Link
                     LinkItem(
                         icon = Icons.Default.Send,
-                        text = "Telegram Channel",
+                        text = stringResource(R.string.about_screen_telegram_channel),
                         url = "https://t.me/irdevs_dns"
                     )
                     
@@ -154,7 +154,7 @@ fun AboutScreen(navController: NavController?) {
                     // Developer Telegram Link
                     LinkItem(
                         icon = Icons.Default.Send,
-                        text = "Developer Telegram",
+                        text = stringResource(R.string.about_screen_developer_telegram),
                         url = "https://t.me/h3dev"
                     )
                     
@@ -163,7 +163,7 @@ fun AboutScreen(navController: NavController?) {
                     // Developer Email Link
                     LinkItem(
                         icon = Icons.Default.Email,
-                        text = "Developer Email",
+                        text = stringResource(R.string.about_screen_developer_email),
                         url = "h3dev.pira@gmail.com",
                         isEmail = true
                     )
@@ -174,7 +174,7 @@ fun AboutScreen(navController: NavController?) {
             
             // Copyright
             Text(
-                text = "© ${java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)} CCloud. All rights reserved.",
+                text = stringResource(R.string.about_screen_copyright, java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
@@ -232,7 +232,7 @@ fun LinkItem(
         
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "Open link",
+            contentDescription = stringResource(R.string.about_screen_open_link),
             modifier = Modifier
                 .size(24.dp)
                 .graphicsLayer(rotationZ = 180f)
@@ -240,22 +240,24 @@ fun LinkItem(
     }
 }
 
+@Composable
 fun getArchitecture(): String {
-    return try {
-        // Get the device's primary ABI
-        val supportedAbis = android.os.Build.SUPPORTED_ABIS
-        if (supportedAbis.isNotEmpty()) {
-            when (supportedAbis[0]) {
-                "arm64-v8a" -> "ARM64 (arm64-v8a)"
-                "armeabi-v7a" -> "ARM32 (armeabi-v7a)"
-                "x86_64" -> "x86_64"
-                "x86" -> "x86"
-                else -> "${supportedAbis[0]} (Unknown)"
-            }
-        } else {
-            "Unknown"
-        }
-    } catch (e: Exception) {
-        "Unknown"
-    }
+    return ""
+//    return try {
+//        // Get the device's primary ABI
+//        val supportedAbis = android.os.Build.SUPPORTED_ABIS
+//        if (supportedAbis.isNotEmpty()) {
+//            when (supportedAbis[0]) {
+//                "arm64-v8a" -> stringResource(R.string.architecture_arm64)
+//                "armeabi-v7a" -> stringResource(R.string.architecture_arm32)
+//                "x86_64" -> "x86_64"
+//                "x86" -> "x86"
+//                else -> stringResource(R.string.architecture_unknown_abi, supportedAbis[0])
+//            }
+//        } else {
+//            stringResource(R.string.architecture_unknown)
+//        }
+//    } catch (e: Exception) {
+//        stringResource(R.string.architecture_unknown)
+//    }
 }
