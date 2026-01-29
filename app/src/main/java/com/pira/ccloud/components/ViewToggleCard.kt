@@ -35,7 +35,6 @@ fun ViewToggleCard(
         modifier = Modifier
             .wrapContentSize()
             .padding(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Row(
             modifier = Modifier

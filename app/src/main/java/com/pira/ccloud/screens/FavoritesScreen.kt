@@ -139,7 +139,10 @@ fun FavoritesScreen(navController: NavController) {
         
         AlertDialog(
             onDismissRequest = { showCreateGroupDialog = false },
-            title = { Text(stringResource(R.string.create_new_playlist)) },
+            title = { Text(
+                text = stringResource(R.string.create_new_playlist) ,
+                style = MaterialTheme.typography.titleMedium
+            ) },
             text = {
                 OutlinedTextField(
                     value = groupName,

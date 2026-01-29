@@ -21,8 +21,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.zIndex
+import com.pira.ccloud.R
 
 @Composable
 fun ExpandableText(
@@ -58,7 +60,6 @@ fun ExpandableText(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -67,7 +68,7 @@ fun ExpandableText(
                         .padding(vertical = 8.dp)
                 ) {
                     Text(
-                        text = if (expanded) "Show Less" else "Show More",
+                        text = if (expanded) stringResource(R.string.show_less) else stringResource(R.string.show_more),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold

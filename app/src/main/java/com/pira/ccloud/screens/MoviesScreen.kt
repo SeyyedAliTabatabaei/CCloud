@@ -44,7 +44,6 @@ import androidx.navigation.NavController
 import com.pira.ccloud.R
 import com.pira.ccloud.components.ErrorScreen
 import com.pira.ccloud.components.FilterTypeSelector
-import com.pira.ccloud.components.GenreFilterSection
 import com.pira.ccloud.components.GenreSelector
 import com.pira.ccloud.components.ModernCircularProgressIndicator
 import com.pira.ccloud.components.MovieGridItem

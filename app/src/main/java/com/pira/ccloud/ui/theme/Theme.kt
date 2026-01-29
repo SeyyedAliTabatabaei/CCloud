@@ -9,14 +9,17 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import com.pira.ccloud.data.model.FontSettings
@@ -40,9 +43,9 @@ private val LightColors = lightColorScheme(
     primary = Primary,
     secondary = Accent,
     background = Color(0xFFF6F5FB),
-    surface = Color.White,
+    surface = Color(0xFFF3F0FF),
     surfaceVariant = Color(0xFFEDEBFA),
-    onPrimary = Color.White,
+    onPrimary = Color.Black,
     onSecondary = Color.White,
     onBackground = Color(0xFF1A1A1A),
     onSurface = Color(0xFF1A1A1A),
@@ -87,4 +90,5 @@ fun CCloudTheme(
         typography = dynamicTypography(1f),
         content = content
     )
+
 }

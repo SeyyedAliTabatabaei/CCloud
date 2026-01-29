@@ -87,7 +87,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.style.TextDirection
 import androidx.navigation.NavController
+import com.pira.ccloud.navigation.AppScreens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -117,9 +119,6 @@ fun SettingsScreen(
     var videoPlayerSettings by remember { mutableStateOf(StorageUtils.loadVideoPlayerSettings(context)) }
     var fontSettings by remember { mutableStateOf(StorageUtils.loadFontSettings(context)) }
     var showResetDialog by remember { mutableStateOf(false) }
-    var showUpdateDialog by remember { mutableStateOf(false) }
-    var latestVersionUrl by remember { mutableStateOf("") }
-    var isCheckingUpdate by remember { mutableStateOf(false) }
     
     // Focus requesters for handling TV remote navigation
     val focusRequester = remember { FocusRequester() }
@@ -173,74 +172,6 @@ fun SettingsScreen(
         updateFontSettings(defaultFontSettings)
     }
     
-    // Compare version strings
-    fun isVersionNewer(currentVersion: String, latestVersion: String): Boolean {
-        try {
-            // Remove 'v' prefix if present
-            val current = currentVersion.removePrefix("v")
-            val latest = latestVersion.removePrefix("v")
-            
-            // Split version numbers
-            val currentParts = current.split(".").map { it.toIntOrNull() ?: 0 }
-            val latestParts = latest.split(".").map { it.toIntOrNull() ?: 0 }
-            
-            // Compare each part
-            for (i in 0 until maxOf(currentParts.size, latestParts.size)) {
-                val currentPart = if (i < currentParts.size) currentParts[i] else 0
-                val latestPart = if (i < latestParts.size) latestParts[i] else 0
-                
-                if (latestPart > currentPart) return true
-                if (latestPart < currentPart) return false
-            }
-            
-            return false // Versions are equal
-        } catch (e: Exception) {
-            Log.e("SettingsScreen", "Error comparing versions", e)
-            return false
-        }
-    }
-    
-    // Check for updates
-    fun checkForUpdates() {
-        isCheckingUpdate = true
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val url = URL("https://api.github.com/repos/code3-dev/CCloud/releases")
-                val connection = url.openConnection()
-                connection.setRequestProperty("User-Agent", "CCloud-App")
-                val response = connection.getInputStream().bufferedReader().use { it.readText() }
-                
-                val releases = json.decodeFromString<List<GitHubRelease>>(response)
-                if (releases.isNotEmpty()) {
-                    val latestRelease = releases.first()
-                    val latestVersion = latestRelease.tag_name
-                    val currentVersion = "v${BuildConfig.VERSION_NAME}"
-                    
-                    withContext(Dispatchers.Main) {
-                        isCheckingUpdate = false
-                        if (isVersionNewer(currentVersion, latestVersion)) {
-                            latestVersionUrl = latestRelease.html_url
-                            showUpdateDialog = true
-                        } else {
-                            Toast.makeText(context, "App is up to date", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        isCheckingUpdate = false
-                        Toast.makeText(context, "Unable to check for updates", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("SettingsScreen", "Error checking for updates", e)
-                withContext(Dispatchers.Main) {
-                    isCheckingUpdate = false
-                    Toast.makeText(context, "Error checking for updates", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-    
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -262,14 +193,14 @@ fun SettingsScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.settings),
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.weight(1f)
                     )
                     
                     // Add like icon button that navigates to favorites
                     navController?.let {
                         IconButton(
-                            onClick = { navController.navigate("favorites") },
+                            onClick = { navController.navigate(AppScreens.Favorites.route) },
                             modifier = Modifier
                                 .size(48.dp)
                                 .focusable()
@@ -330,8 +261,8 @@ fun SettingsScreen(
                                 modifier = Modifier.size(24.dp)
                             )
                             Text(
-                                text = "Theme Settings",
-                                style = MaterialTheme.typography.titleLarge,
+                                text = stringResource(R.string.theme_settings),
+                                style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier
                                     .padding(start = 8.dp)
                                     .weight(1f)
@@ -345,16 +276,10 @@ fun SettingsScreen(
                         
                         AnimatedVisibility(visible = isExpanded) {
                             Column(modifier = Modifier.fillMaxWidth()) {
-                                // Theme Mode Section
-                                Text(
-                                    text = "Theme Mode",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier.padding(bottom = 8.dp)
-                                )
                                 
                                 ThemeModeOption(
                                     mode = ThemeMode.LIGHT,
-                                    label = "Light",
+                                    label = stringResource(R.string.light),
                                     isSelected = themeSettings.themeMode == ThemeMode.LIGHT,
                                     onSelect = { mode ->
                                         val newSettings = themeSettings.copy(themeMode = mode)
@@ -364,7 +289,7 @@ fun SettingsScreen(
                                 
                                 ThemeModeOption(
                                     mode = ThemeMode.DARK,
-                                    label = "Dark",
+                                    label = stringResource(R.string.dark),
                                     isSelected = themeSettings.themeMode == ThemeMode.DARK,
                                     onSelect = { mode ->
                                         val newSettings = themeSettings.copy(themeMode = mode)
@@ -374,7 +299,7 @@ fun SettingsScreen(
                                 
                                 ThemeModeOption(
                                     mode = ThemeMode.SYSTEM,
-                                    label = "System Default",
+                                    label = stringResource(R.string.default_system),
                                     isSelected = themeSettings.themeMode == ThemeMode.SYSTEM,
                                     onSelect = { mode ->
                                         val newSettings = themeSettings.copy(themeMode = mode)
@@ -443,8 +368,8 @@ fun SettingsScreen(
                                 modifier = Modifier.size(24.dp)
                             )
                             Text(
-                                text = "Video Player Settings",
-                                style = MaterialTheme.typography.titleLarge,
+                                text = stringResource(R.string.video_player_settings),
+                                style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier
                                     .padding(start = 8.dp)
                                     .weight(1f)
@@ -459,8 +384,8 @@ fun SettingsScreen(
                         AnimatedVisibility(visible = isExpanded) {
                             Column(modifier = Modifier.fillMaxWidth()) {
                                 Text(
-                                    text = "Seek Time: ${videoPlayerSettings.seekTimeSeconds} seconds",
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    text = stringResource(R.string.seek_time) + " : " + "${videoPlayerSettings.seekTimeSeconds}" + stringResource(R.string.seconds),
+                                    style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier.padding(bottom = 8.dp)
                                 )
                                 
@@ -495,14 +420,14 @@ fun SettingsScreen(
                                 
                                 // Subtitle Settings Section
                                 Text(
-                                    text = "Subtitle Settings",
+                                    text = stringResource(R.string.subtitle_settings),
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier.padding(bottom = 12.dp)
                                 )
                                 
                                 // Text color setting
                                 SubtitleColorSetting(
-                                    title = "Text Color",
+                                    title = stringResource(R.string.text_color),
                                     currentColor = Color(subtitleSettings.textColor),
                                     onColorSelected = { color ->
                                         updateSubtitleSettings(subtitleSettings.copy(textColor = color.toArgb()))
@@ -514,7 +439,7 @@ fun SettingsScreen(
                                 
                                 // Border color setting (Background)
                                 SubtitleColorSetting(
-                                    title = "Background Color",
+                                    title = stringResource(R.string.background_color),
                                     currentColor = Color(subtitleSettings.borderColor),
                                     onColorSelected = { color ->
                                         updateSubtitleSettings(subtitleSettings.copy(borderColor = color.toArgb()))
@@ -527,8 +452,8 @@ fun SettingsScreen(
                                 
                                 // Text size setting
                                 Text(
-                                    text = "Text Size: ${subtitleSettings.textSize.toInt()}sp",
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    text = stringResource(R.string.text_size) + " : " +  subtitleSettings.textSize.toInt().toString(),
+                                    style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier.padding(bottom = 8.dp)
                                 )
                                 
@@ -574,29 +499,6 @@ fun SettingsScreen(
             }
         }
         
-        item {
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn(animationSpec = tween(900)) + slideInVertically(animationSpec = tween(900, delayMillis = 700)),
-                exit = fadeOut(animationSpec = tween(900)) + slideOutVertically(animationSpec = tween(900))
-            ) {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-        }
-        
-        // Favorites Card
-        item {
-            val focusRequester = remember { FocusRequester() }
-            
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn(animationSpec = tween(800)) + slideInVertically(animationSpec = tween(800, delayMillis = 500)),
-                exit = fadeOut(animationSpec = tween(800)) + slideOutVertically(animationSpec = tween(800))
-            ) {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-        }
-        
         // About Card
         item {
             val focusRequester = remember { FocusRequester() }
@@ -609,7 +511,7 @@ fun SettingsScreen(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { navController?.navigate("about") }
+                        .clickable { navController?.navigate(AppScreens.About.route) }
                         .focusable()
                         .focusRequester(aboutCardFocusRequester)
                         .focusProperties {
@@ -619,7 +521,7 @@ fun SettingsScreen(
                         .onKeyEvent { keyEvent ->
                             when (keyEvent.key) {
                                 Key.Enter, Key.Spacebar -> {
-                                    navController?.navigate("about")
+                                    navController?.navigate(AppScreens.About.route)
                                     true // Handled
                                 }
                                 else -> false // Let default handling occur
@@ -641,118 +543,23 @@ fun SettingsScreen(
                                 modifier = Modifier.size(24.dp)
                             )
                             Text(
-                                text = "About",
-                                style = MaterialTheme.typography.titleLarge,
+                                text = stringResource(R.string.about),
+                                style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier
                                     .padding(start = 8.dp)
                                     .weight(1f)
                             )
                         }
-                        
-                        Text(
-                            text = "Learn more about CCloud and its developer",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
                     }
                 }
             }
         }
-        
+
         item {
             AnimatedVisibility(
                 visible = true,
-                enter = fadeIn(animationSpec = tween(1100)) + slideInVertically(animationSpec = tween(1100, delayMillis = 800)),
-                exit = fadeOut(animationSpec = tween(1100)) + slideOutVertically(animationSpec = tween(1100))
-            ) {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-        }
-        
-        // Check for Updates Card
-        item {
-            val focusRequester = remember { FocusRequester() }
-            
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn(animationSpec = tween(1200)) + slideInVertically(animationSpec = tween(1200, delayMillis = 900)),
-                exit = fadeOut(animationSpec = tween(1200)) + slideOutVertically(animationSpec = tween(1200))
-            ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { 
-                            if (!isCheckingUpdate) {
-                                checkForUpdates()
-                            }
-                        }
-                        .focusable()
-                        .focusRequester(updateCardFocusRequester)
-                        .focusProperties {
-                            up = aboutCardFocusRequester
-                            down = resetCardFocusRequester
-                        }
-                        .onKeyEvent { keyEvent ->
-                            when (keyEvent.key) {
-                                Key.Enter, Key.Spacebar -> {
-                                    if (!isCheckingUpdate) {
-                                        checkForUpdates()
-                                    }
-                                    true // Handled
-                                }
-                                else -> false // Let default handling occur
-                            }
-                        },
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Download,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Text(
-                                text = "Check for Updates",
-                                style = MaterialTheme.typography.titleLarge,
-                                modifier = Modifier
-                                    .padding(start = 8.dp)
-                                    .weight(1f)
-                            )
-                            if (isCheckingUpdate) {
-                                // Show loading indicator
-                                Icon(
-                                    imageVector = Icons.Default.Refresh,
-                                    contentDescription = "Checking",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .padding(2.dp)
-                                )
-                            }
-                        }
-                        
-                        Text(
-                            text = "Check for the latest version of the app",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-        }
-        
-        item {
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn(animationSpec = tween(1300)) + slideInVertically(animationSpec = tween(1300, delayMillis = 1000)),
-                exit = fadeOut(animationSpec = tween(1300)) + slideOutVertically(animationSpec = tween(1300))
+                enter = fadeIn(animationSpec = tween(500)) + slideInVertically(animationSpec = tween(500, delayMillis = 200)),
+                exit = fadeOut(animationSpec = tween(500)) + slideOutVertically(animationSpec = tween(500))
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -801,8 +608,8 @@ fun SettingsScreen(
                                 modifier = Modifier.size(24.dp)
                             )
                             Text(
-                                text = "Reset to Defaults",
-                                style = MaterialTheme.typography.titleLarge,
+                                text = stringResource(R.string.reset_Defaults),
+                                style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier
                                     .padding(start = 8.dp)
                                     .weight(1f)
@@ -810,7 +617,7 @@ fun SettingsScreen(
                         }
                         
                         Text(
-                            text = "Tap to reset all settings to default values",
+                            text = stringResource(R.string.tap_to_reset_Defaults),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -829,10 +636,16 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showResetDialog = false },
             title = {
-                Text(text = "Reset Settings")
+                Text(
+                    text = stringResource(R.string.reset_Defaults) ,
+                    style = MaterialTheme.typography.titleMedium.copy(textDirection = TextDirection.Rtl)
+                )
             },
             text = {
-                Text("Are you sure you want to reset all settings to their default values?")
+                Text(
+                    stringResource(R.string.question_reset_to_default) ,
+                    style = MaterialTheme.typography.bodyMedium.copy(textDirection = TextDirection.Rtl)
+                )
             },
             confirmButton = {
                 TextButton(
@@ -841,45 +654,14 @@ fun SettingsScreen(
                         showResetDialog = false
                     }
                 ) {
-                    Text("Reset")
+                    Text(stringResource(R.string.reset))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showResetDialog = false }
                 ) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
-    
-    // Update available dialog
-    if (showUpdateDialog) {
-        AlertDialog(
-            onDismissRequest = { showUpdateDialog = false },
-            title = {
-                Text(text = "Update Available")
-            },
-            text = {
-                Text("A new version of the app is available. Would you like to download it now?")
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(latestVersionUrl))
-                        context.startActivity(intent)
-                        showUpdateDialog = false
-                    }
-                ) {
-                    Text("Download")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showUpdateDialog = false }
-                ) {
-                    Text("Later")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -919,7 +701,7 @@ fun ThemeModeOption(
         )
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(start = 8.dp)
         )
     }
@@ -995,7 +777,7 @@ fun SubtitleColorSetting(
     Column {
         Text(
             text = title,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         
@@ -1012,7 +794,7 @@ fun SubtitleColorSetting(
                         isSelected = currentColor == Color.Transparent,
                         onClick = { onColorSelected(Color.Transparent) },
                         showBorder = true,
-                        label = "Empty"
+                        label = stringResource(R.string.empty)
                     )
                 }
                 
@@ -1022,7 +804,7 @@ fun SubtitleColorSetting(
                         color = Color.Black.copy(alpha = 0.5f),
                         isSelected = currentColor == Color.Black.copy(alpha = 0.5f),
                         onClick = { onColorSelected(Color.Black.copy(alpha = 0.5f)) },
-                        label = "Glass"
+                        label = stringResource(R.string.glass)
                     )
                 }
                 

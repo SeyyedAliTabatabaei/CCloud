@@ -33,39 +33,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.pira.ccloud.R
 import com.pira.ccloud.data.model.FilterType
 import com.pira.ccloud.data.model.Genre
-
-@Composable
-fun GenreFilterSection(
-    genres: List<Genre>,
-    selectedGenreId: Int,
-    selectedFilterType: FilterType,
-    onGenreSelected: (Int) -> Unit,
-    onFilterTypeSelected: (FilterType) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-
-        // Filter type selector on the left
-        FilterTypeSelector(
-            selectedFilterType = selectedFilterType,
-            onFilterTypeSelected = onFilterTypeSelected
-        )
-
-        // Genre selector on the right
-        GenreSelector(
-            genres = genres,
-            selectedGenreId = selectedGenreId,
-            onGenreSelected = onGenreSelected
-        )
-    }
-}
 
 @Composable
 fun FilterTypeSelector(
@@ -98,10 +71,10 @@ fun FilterTypeSelector(
 
             Text(
                 text = when (selectedFilterType) {
-                    FilterType.DEFAULT -> "Default"
-                    FilterType.BY_YEAR -> "By Year"
-                    FilterType.BY_IMDB -> "By IMDB"
-                    FilterType.BY_VIEWS -> "By Views"
+                    FilterType.DEFAULT -> stringResource(R.string.sort_default)
+                    FilterType.BY_YEAR -> stringResource(R.string.sort_year)
+                    FilterType.BY_IMDB -> stringResource(R.string.sort_imdb)
+                    FilterType.BY_VIEWS -> stringResource(R.string.sort_views)
                 },
                 style = MaterialTheme.typography.labelMedium
             )
@@ -151,8 +124,9 @@ fun GenreSelector(
                 modifier = Modifier.size(20.dp)
             )
 
+             val genreTitle = if (selectedGenreId == 0) stringResource(R.string.all) else genres.find { it.id == selectedGenreId }?.title ?: "Unknow"
             Text(
-                text = "${if (selectedGenreId == 0) "All Genres" else genres.find { it.id == selectedGenreId }?.title ?: "All Genres"}",
+                text = genreTitle,
                 style = MaterialTheme.typography.labelMedium
             )
         }

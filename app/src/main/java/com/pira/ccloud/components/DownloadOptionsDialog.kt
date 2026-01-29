@@ -11,7 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.pira.ccloud.R
 import com.pira.ccloud.data.model.Source
 
 @Composable
@@ -29,14 +31,14 @@ fun DownloadOptionsDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Download & Play Options",
+                text = stringResource(R.string.download_play_options),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
             )
         },
         text = {
             Text(
-                text = "Choose how to handle this video",
+                text = stringResource(R.string.choose_handle_video),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -48,7 +50,7 @@ fun DownloadOptionsDialog(
             ) {
                 // Download options
                 Text(
-                    text = "Download Options",
+                    text = stringResource(R.string.download_options),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.fillMaxWidth()
@@ -66,7 +68,7 @@ fun DownloadOptionsDialog(
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 ) {
-                    Text("Copy Link")
+                    Text(stringResource(R.string.copy_link))
                 }
                 
                 Button(
@@ -81,7 +83,7 @@ fun DownloadOptionsDialog(
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 ) {
-                    Text("Download with Browser")
+                    Text(stringResource(R.string.download_with_browser))
                 }
                 
                 Button(
@@ -96,12 +98,12 @@ fun DownloadOptionsDialog(
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 ) {
-                    Text("Download with ADM")
+                    Text(stringResource(R.string.download_with_adm))
                 }
                 
                 // Play options
                 Text(
-                    text = "Play Options",
+                    text = stringResource(R.string.play_options),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.fillMaxWidth()
@@ -119,7 +121,7 @@ fun DownloadOptionsDialog(
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 ) {
-                    Text("Open in VLC Player")
+                    Text(stringResource(R.string.open_in_vlc))
                 }
                 
                 Button(
@@ -134,7 +136,7 @@ fun DownloadOptionsDialog(
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 ) {
-                    Text("Open in MX Player")
+                    Text(stringResource(R.string.open_in_mx))
                 }
                 
                 Button(
@@ -149,14 +151,14 @@ fun DownloadOptionsDialog(
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 ) {
-                    Text("Open in KM Player")
+                    Text(stringResource(R.string.open_in_km))
                 }
                 
                 TextButton(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         },

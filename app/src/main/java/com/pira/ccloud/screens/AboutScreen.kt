@@ -51,27 +51,10 @@ fun AboutScreen(navController: NavController?) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Header with back button like Favorites screen
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { navController?.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.about_screen_back)
-                )
-            }
-            
-            Text(
-                text = stringResource(R.string.about),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 16.dp)
-            )
-        }
+        Toolbar(
+            navController = navController ,
+            title = stringResource(R.string.about)
+        )
         
         // Content
         Column(

@@ -9,8 +9,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDirection
+import com.pira.ccloud.R
 import com.pira.ccloud.data.model.FilterType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,17 +43,17 @@ fun SortBottomSheet(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "Sort Movies",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
-
                 IconButton(onClick = onDismiss) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Close"
                     )
                 }
+                Text(
+                    text = stringResource(R.string.sort),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -59,10 +62,10 @@ fun SortBottomSheet(
             FilterType.entries.forEach { filter ->
                 SortItemCard(
                     title = when(filter) {
-                        FilterType.DEFAULT -> "Default"
-                        FilterType.BY_YEAR -> "By Year"
-                        FilterType.BY_IMDB -> "By IMDb"
-                        FilterType.BY_VIEWS -> "By Views"
+                        FilterType.DEFAULT -> stringResource(R.string.sort_default)
+                        FilterType.BY_YEAR -> stringResource(R.string.sort_year)
+                        FilterType.BY_IMDB -> stringResource(R.string.sort_imdb)
+                        FilterType.BY_VIEWS -> stringResource(R.string.sort_views)
                     },
                     isSelected = filter == selectedFilter,
                     onClick = { onFilterSelected(filter) }
@@ -95,10 +98,10 @@ fun SortItemCard(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium.copy(textDirection = TextDirection.Rtl),
                 color = if (isSelected) MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.onPrimary ,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth() ,
             )
         }
     }

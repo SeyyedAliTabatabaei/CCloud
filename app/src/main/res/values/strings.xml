@@ -50,6 +50,31 @@
     <string name="rename">تغییر نام</string>
     <string name="create">ایجاد</string>
     <string name="more_options">گزینه های بیشتر</string>
+    <string name="all">همه</string>
+    <string name="genre">ژانر</string>
+    <string name="select_genres">انتخاب ژانر</string>
+    <string name="sort">مرتب سازی</string>
+    <string name="sort_default">پیشفرض</string>
+    <string name="sort_year">جدیدترین ها</string>
+    <string name="sort_imdb">برترین ها</string>
+    <string name="sort_views">پرطرفدار ها</string>
+    <string name="theme_settings">تنظیمات تم</string>
+    <string name="video_player_settings">تنظیمات پخش کننده ویدئو</string>
+    <string name="light">روشن</string>
+    <string name="dark">تاریک</string>
+    <string name="default_system">پیشفرض سیستم</string>
+    <string name="seek_time">دنبال کننده زمان</string>
+    <string name="seconds">ثانیه</string>
+    <string name="subtitle_settings">تنظیمات زیرنویس</string>
+    <string name="text_color">رنگ متن</string>
+    <string name="background_color">رنگ پس زمینه</string>
+    <string name="text_size">سایز متن</string>
+    <string name="reset_Defaults">بازنشانی به تنظیمات پیشفرض</string>
+    <string name="tap_to_reset_Defaults">برای بازنشانی همه تنظیمات به مقادیر پیش‌فرض، کلیک کنید</string>
+    <string name="question_reset_to_default">آیا مطمئن هستید که می‌خواهید تمام تنظیمات را به مقادیر پیش‌فرضشان بازنشانی کنید؟</string>
+    <string name="reset">بازنشانی</string>
+    <string name="glass">شیشه ای</string>
+    <string name="empty">خالی</string>
 
     <!-- Favorites -->
     <string name="delete_all_favorites">حذف همه علاقه‌مندی‌ها</string>
@@ -84,4 +109,50 @@
 
     <string name="select_playlists">انتخاب پلی‌لیست‌ها</string>
     <string name="move_to_playlist">انتقال به پلی‌لیست</string>
+
+    <!-- Movie -->
+    <string name="movie_not_found">فیلمی یافت نشد</string>
+    <string name="series_not_found">سریالی یافت نشد</string>
+    <string name="genres">ژانرها</string>
+    <string name="description">توضیحات</string>
+    <string name="available_qualities">کیفیت‌های موجود</string>
+    <string name="rating_imdb">IMDB %1$s</string>
+
+    <!-- Favorites -->
+    <string name="add_to_favorites">به علاقه‌مندی‌ها اضافه شد</string>
+    <string name="remove_favorite_title">حذف از علاقه‌مندی‌ها</string>
+    <string name="remove_favorite_message">
+        آیا مطمئن هستید که می‌خواهید این فیلم را از علاقه‌مندی‌های خود حذف کنید؟
+    </string>
+
+    <!-- Source dialog -->
+    <string name="choose_action_quality">عملیات مورد نظر برای این کیفیت ویدیو را انتخاب کنید</string>
+    <string name="download_options">گزینه‌های دانلود</string>
+    <string name="play_in_app">پخش در FilmPlus</string>
+
+    <string name="episode">قسمت</string>
+    <string name="play">پخش</string>
+    <string name="select_quality_download">انتخاب کیفیت برای دانلود</string>
+    <string name="choose_quality_download">یک کیفیت برای دانلود انتخاب کنید</string>
+    <string name="download">دانلود</string>
+    <string name="seasons">فصل ها</string>
+    <string name="loading_seasons">بارگذاری فصل ها...</string>
+    <string name="error_loading_seasons">خطا در بارگذاری فصل ها</string>
+    <string name="no_seasons_available">فصلی در دسترس نیست!</string>
+
+    <!-- Download Options Dialog -->
+    <string name="download_play_options">گزینه‌های دانلود و پخش</string>
+    <string name="choose_handle_video">نحوه‌ی استفاده از این ویدیو را انتخاب کنید</string>
+
+    <string name="copy_link">کپی لینک</string>
+    <string name="download_with_browser">دانلود با مرورگر</string>
+    <string name="download_with_adm">دانلود با ADM</string>
+
+    <string name="play_options">گزینه‌های پخش</string>
+    <string name="open_in_vlc">باز کردن در VLC Player</string>
+    <string name="open_in_mx">باز کردن در MX Player</string>
+    <string name="open_in_km">باز کردن در KM Player</string>
+
+    <string name="show_more">نمایش بیشتر</string>
+    <string name="show_less">نمایش کمتر</string>
 </resources>

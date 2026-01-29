@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
@@ -63,6 +64,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.pira.ccloud.R
 import com.pira.ccloud.VideoPlayerActivity
 import com.pira.ccloud.components.DownloadOptionsDialog
 import com.pira.ccloud.components.ExpandableText
@@ -173,7 +175,7 @@ fun SingleSeriesScreen(
                     )
                 }
                 Text(
-                    text = "Series not found",
+                    text = stringResource(R.string.series_not_found),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(top = 16.dp)
@@ -211,14 +213,14 @@ fun SourceOptionsDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Episode: ${episode.title}",
+                text = stringResource(R.string.episode) + " : " + episode.title,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
         },
         text = {
             Text(
-                text = "Choose quality to play",
+                text = stringResource(R.string.choose_action_quality),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -242,7 +244,7 @@ fun SourceOptionsDialog(
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Play ${source.quality}")
+                        Text(stringResource(R.string.play) + " ${source.quality}")
                     }
                 }
                 
@@ -252,7 +254,7 @@ fun SourceOptionsDialog(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         },
@@ -305,14 +307,14 @@ fun DownloadMenu(
             onDismissRequest = onDismiss,
             title = {
                 Text(
-                    text = "Select Quality to Download",
+                    text = stringResource(R.string.select_quality_download),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
             },
             text = {
                 Text(
-                    text = "Choose a quality option for download",
+                    text = stringResource(R.string.choose_quality_download),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -352,7 +354,7 @@ fun DownloadMenu(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             },
@@ -445,27 +447,26 @@ fun SeriesDetailsContent(
                             .padding(start = 16.dp)
                             .weight(1f)
                     ) {
-                        // Series title
+                        // Movie title
                         Text(
                             text = series.title,
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        
+
                         // Country and year
                         val countryText = if (series.country.isNotEmpty()) {
                             "${series.country.joinToString(", ") { it.title }} (${series.year})"
                         } else {
                             "(${series.year})"
                         }
-                        
+
                         Text(
                             text = countryText,
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        
+
                         // Rating
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -476,13 +477,12 @@ fun SeriesDetailsContent(
                                 tint = Color.Yellow,
                                 modifier = Modifier.size(24.dp)
                             )
-                            
+
                             Spacer(modifier = Modifier.width(8.dp))
-                            
+
                             Text(
-                                text = String.format("%.1f", series.imdb),
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Medium,
+                                text = "IMDB " + String.format("%.1f", series.imdb),
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
@@ -519,8 +519,8 @@ fun SeriesDetailsContent(
                 if (showRemoveFavoriteDialog) {
                     AlertDialog(
                         onDismissRequest = { showRemoveFavoriteDialog = false },
-                        title = { Text("Remove from Favorites") },
-                        text = { Text("Are you sure you want to remove this series from your favorites?") },
+                        title = { Text(stringResource(R.string.remove_from_favorites)) },
+                        text = { Text(stringResource(R.string.remove_favorite_message)) },
                         confirmButton = {
                             TextButton(
                                 onClick = {
@@ -528,17 +528,17 @@ fun SeriesDetailsContent(
                                     isFavorite = false
                                     showRemoveFavoriteDialog = false
                                     // Show toast
-                                    android.widget.Toast.makeText(context, "Removed from favorites", android.widget.Toast.LENGTH_SHORT).show()
+                                    android.widget.Toast.makeText(context, context.getString(R.string.removed_from_favorites), android.widget.Toast.LENGTH_SHORT).show()
                                 }
                             ) {
-                                Text("Remove")
+                                Text(stringResource(R.string.remove))
                             }
                         },
                         dismissButton = {
                             TextButton(
                                 onClick = { showRemoveFavoriteDialog = false }
                             ) {
-                                Text("Cancel")
+                                Text(stringResource(R.string.cancel))
                             }
                         }
                     )
@@ -568,7 +568,7 @@ fun SeriesDetailsContent(
                             StorageUtils.saveFavorite(context, favoriteItem)
                             isFavorite = true
                             // Show toast
-                            android.widget.Toast.makeText(context, "Added to favorites", android.widget.Toast.LENGTH_SHORT).show()
+                            android.widget.Toast.makeText(context, context.getString(R.string.add_to_favorites), android.widget.Toast.LENGTH_SHORT).show()
                         }
                     },
                     modifier = Modifier
@@ -588,7 +588,7 @@ fun SeriesDetailsContent(
             // Genres
             if (series.genres.isNotEmpty()) {
                 Text(
-                    text = "Genres",
+                    text = stringResource(R.string.genres),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
@@ -634,7 +634,7 @@ fun SeriesDetailsContent(
         item {
             // Description
             Text(
-                text = "Description",
+                text = stringResource(R.string.description),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -644,21 +644,19 @@ fun SeriesDetailsContent(
         
         item {
             // Set layout direction to RTL for the description text
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                ExpandableText(
-                    text = series.description,
-                    modifier = Modifier
-                        .padding(start = 16.dp, end = 16.dp)
-                        .fillMaxWidth()
-                )
-            }
+            ExpandableText(
+                text = series.description,
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp)
+                    .fillMaxWidth()
+            )
         }
         
         // Seasons selection
         if (seasonsViewModel.seasons.isNotEmpty()) {
             item {
                 Text(
-                    text = "Seasons",
+                    text = stringResource(R.string.seasons),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
@@ -711,7 +709,7 @@ fun SeriesDetailsContent(
         item {
             if (seasonsViewModel.isLoading) {
                 Text(
-                    text = "Loading seasons...",
+                    text = stringResource(R.string.loading_seasons),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
@@ -725,7 +723,7 @@ fun SeriesDetailsContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Error loading seasons: ${seasonsViewModel.errorMessage}",
+                        text = stringResource(R.string.error_loading_seasons) + " : " + seasonsViewModel.errorMessage,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(16.dp)
@@ -735,7 +733,7 @@ fun SeriesDetailsContent(
                         onClick = { seasonsViewModel.loadSeasons(series.id) },
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        Text("Retry")
+                        Text(stringResource(R.string.retry))
                     }
                 }
             } else if (seasonsViewModel.seasons.isNotEmpty()) {
@@ -759,7 +757,7 @@ fun SeriesDetailsContent(
                 }
             } else {
                 Text(
-                    text = "No seasons available",
+                    text = stringResource(R.string.no_seasons_available),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(16.dp)

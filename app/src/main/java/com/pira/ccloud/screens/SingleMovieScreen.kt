@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
@@ -61,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.pira.ccloud.R
 import com.pira.ccloud.VideoPlayerActivity
 import com.pira.ccloud.components.DownloadOptionsDialog
 import com.pira.ccloud.components.ExpandableText
@@ -78,11 +80,11 @@ fun SingleMovieScreen(
 ) {
     var movie by remember { mutableStateOf<Movie?>(null) }
     val context = LocalContext.current
-    
+
     LaunchedEffect(movieId) {
         movie = StorageUtils.loadMovieFromFile(context, movieId)
     }
-    
+
     if (movie != null) {
         MovieDetailsContent(
             movie = movie!!,
@@ -108,7 +110,7 @@ fun SingleMovieScreen(
                     )
                 }
                 Text(
-                    text = "Movie not found",
+                    text = stringResource(R.string.movie_not_found),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(top = 16.dp)
@@ -129,7 +131,7 @@ fun MovieDetailsContent(
     val layoutDirection = LocalLayoutDirection.current
     var selectedSource by remember { mutableStateOf<Source?>(null) }
     var showSourceDialog by remember { mutableStateOf(false) }
-    
+
     if (showSourceDialog && selectedSource != null) {
         SourceOptionsDialog(
             source = selectedSource!!,
@@ -144,7 +146,7 @@ fun MovieDetailsContent(
             }
         )
     }
-    
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -169,7 +171,7 @@ fun MovieDetailsContent(
                     .background(MaterialTheme.colorScheme.surface),
                 contentScale = ContentScale.Crop
             )
-            
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -182,7 +184,7 @@ fun MovieDetailsContent(
                         )
                     )
             )
-            
+
             // Row to contain poster and movie details side by side
             Row(
                 modifier = Modifier
@@ -204,7 +206,7 @@ fun MovieDetailsContent(
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Fit
                 )
-                
+
                 // Movie details to the right of the poster
                 Column(
                     modifier = Modifier
@@ -217,20 +219,20 @@ fun MovieDetailsContent(
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-                    
+
                     // Country and year
                     val countryText = if (movie.country.isNotEmpty()) {
                         "${movie.country.joinToString(", ") { it.title }} (${movie.year})"
                     } else {
                         "(${movie.year})"
                     }
-                    
+
                     Text(
                         text = countryText,
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    
+
                     // Rating
                     Row(
                         verticalAlignment = Alignment.CenterVertically
@@ -241,9 +243,9 @@ fun MovieDetailsContent(
                             tint = Color.Yellow,
                             modifier = Modifier.size(24.dp)
                         )
-                        
+
                         Spacer(modifier = Modifier.width(8.dp))
-                        
+
                         Text(
                             text = "IMDB " + String.format("%.1f", movie.imdb),
                             style = MaterialTheme.typography.bodyMedium,
@@ -252,7 +254,7 @@ fun MovieDetailsContent(
                     }
                 }
             }
-            
+
             // Back button
             IconButton(
                 onClick = onBackClick,
@@ -266,25 +268,25 @@ fun MovieDetailsContent(
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-            
+
             // Favorite button
             var isFavorite by remember { mutableStateOf(false) }
             val context = LocalContext.current
             val movieId = movie.id
-            
+
             // Check if movie is already favorite
             LaunchedEffect(movieId) {
                 isFavorite = StorageUtils.isFavorite(context, movieId, "movie")
             }
-            
+
             var showRemoveFavoriteDialog by remember { mutableStateOf(false) }
-            
+
             // Confirmation dialog for removing from favorites
             if (showRemoveFavoriteDialog) {
                 AlertDialog(
                     onDismissRequest = { showRemoveFavoriteDialog = false },
-                    title = { Text("Remove from Favorites") },
-                    text = { Text("Are you sure you want to remove this movie from your favorites?") },
+                    title = { Text(stringResource(R.string.remove_from_favorites)) },
+                    text = { Text(stringResource(R.string.remove_favorite_message)) },
                     confirmButton = {
                         TextButton(
                             onClick = {
@@ -292,22 +294,22 @@ fun MovieDetailsContent(
                                 isFavorite = false
                                 showRemoveFavoriteDialog = false
                                 // Show toast
-                                android.widget.Toast.makeText(context, "Removed from favorites", android.widget.Toast.LENGTH_SHORT).show()
+                                android.widget.Toast.makeText(context, context.getString(R.string.removed_from_favorites), android.widget.Toast.LENGTH_SHORT).show()
                             }
                         ) {
-                            Text("Remove")
+                            Text(stringResource(R.string.remove))
                         }
                     },
                     dismissButton = {
                         TextButton(
                             onClick = { showRemoveFavoriteDialog = false }
                         ) {
-                            Text("Cancel")
+                            Text(stringResource(R.string.cancel))
                         }
                     }
                 )
             }
-            
+
             IconButton(
                 onClick = {
                     if (isFavorite) {
@@ -333,7 +335,7 @@ fun MovieDetailsContent(
                         StorageUtils.saveFavorite(context, favoriteItem)
                         isFavorite = true
                         // Show toast
-                        android.widget.Toast.makeText(context, "Added to favorites", android.widget.Toast.LENGTH_SHORT).show()
+                        android.widget.Toast.makeText(context, context.getString(R.string.add_to_favorites), android.widget.Toast.LENGTH_SHORT).show()
                     }
                 },
                 modifier = Modifier
@@ -347,17 +349,17 @@ fun MovieDetailsContent(
                 )
             }
         }
-        
+
         // Genres
         if (movie.genres.isNotEmpty()) {
             Text(
-                text = "Genres",
+                text = stringResource(R.string.genres),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
             )
-            
+
             // Improved genres display with better wrapping and styling
             LazyRow(
                 modifier = Modifier
@@ -392,36 +394,34 @@ fun MovieDetailsContent(
                 }
             }
         }
-        
+
         // Description
         Text(
-            text = "Description",
+            text = stringResource(R.string.description),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
         )
-        
+
         // Set layout direction to RTL for the description text
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            ExpandableText(
-                text = movie.description,
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp)
-                    .fillMaxWidth()
-            )
-        }
-        
+        ExpandableText(
+            text = movie.description,
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp)
+                .fillMaxWidth()
+        )
+
         // Sources/Quality options
         if (movie.sources.isNotEmpty()) {
             Text(
-                text = "Available Qualities",
+                text = stringResource(R.string.available_qualities),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
             )
-            
+
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp)
@@ -452,7 +452,7 @@ fun MovieDetailsContent(
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
-                            
+
                             Icon(
                                 imageVector = Icons.Default.PlayArrow,
                                 contentDescription = "Play",
@@ -463,7 +463,7 @@ fun MovieDetailsContent(
                 }
             }
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
@@ -477,7 +477,7 @@ fun SourceOptionsDialog(
 ) {
     val context = LocalContext.current
     var showDownloadOptions by remember { mutableStateOf(false) }
-    
+
     if (showDownloadOptions) {
         DownloadOptionsDialog(
             source = source,
@@ -490,7 +490,7 @@ fun SourceOptionsDialog(
             onOpenInKMPlayer = { DownloadUtils.openWithKMPlayer(context, source.url) }
         )
     }
-    
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -502,7 +502,7 @@ fun SourceOptionsDialog(
         },
         text = {
             Text(
-                text = "Choose an action for this video quality",
+                text = stringResource(R.string.choose_action_quality),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -524,9 +524,9 @@ fun SourceOptionsDialog(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Download Options")
+                    Text(stringResource(R.string.download_options))
                 }
-                
+
                 Button(
                     onClick = { onPlay(source) },
                     modifier = Modifier.fillMaxWidth(),
@@ -543,16 +543,16 @@ fun SourceOptionsDialog(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Play in CCloud")
+                    Text(stringResource(R.string.play_in_app))
                 }
-                
+
                 // Cancel button moved to the bottom of the dialog
                 TextButton(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         },
