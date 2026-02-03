@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -13,10 +15,10 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.pira.ccloud"
+        applicationId = "com.film.plus"
         // Supported Android versions: Android 8.0 (API 24) and higher
         // Android 7.0 (API 23) and earlier are not supported
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 19
         versionName = "1.1.8"
@@ -32,46 +34,17 @@ android {
         buildConfig = true // Add this line to enable BuildConfig generation
     }
 
-    signingConfigs {
-        create("release") {
-            val keystorePropertiesFile = rootProject.file("key.properties")
-            val keystoreProperties = Properties()
-            if (keystorePropertiesFile.exists()) {
-                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-            }
-            
-            keyAlias = keystoreProperties.getProperty("keyAlias") ?: ""
-            keyPassword = keystoreProperties.getProperty("keyPassword") ?: ""
-            storeFile = file(keystoreProperties.getProperty("storeFile") ?: "keystore.jks")
-            storePassword = keystoreProperties.getProperty("storePassword") ?: ""
-        }
-    }
-
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             // Move keystoreProperties declaration to correct scope
-            val keystorePropertiesFile = rootProject.file("key.properties")
-            val keystoreProperties = Properties()
-            if (keystorePropertiesFile.exists()) {
-                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-            }
-            val storeFilePath = keystoreProperties.getProperty("storeFile") ?: "keystore/debug.keystore"
-            signingConfig = if (file(storeFilePath).exists()) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
-            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
-        
-        debug {
-            isDebuggable = true
-        }
+
     }
     
     splits {
@@ -163,4 +136,16 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Firebase BOM
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+
+    // Analytics
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
+    // Crashlytics
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+
+    // Messaging (FCM)
+    implementation("com.google.firebase:firebase-messaging-ktx")
 }

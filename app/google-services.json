@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "283848560763",
+    "project_id": "filmplus-f07bf",
+    "storage_bucket": "filmplus-f07bf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283848560763:android:49f1ec080e56e8e18b12de",
+        "android_client_info": {
+          "package_name": "com.film.plus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNoymOwldgZbtGccqMLwyVQftFmIJheQE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
